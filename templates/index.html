@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block main %}
+
+    <div class="bg_img d-flex align-items-center vh-100">
+        <div class="container p-3 graybox">
+            <div class="row justify-content-center text-center p-4">
+                <h1 style="color: white;">Mountain Project Visualizer</h1>
+            </div>
+
+            <!-- User input form -->
+            <form action="/data" method="post" class="needs-validation" novalidate>
+            <div class="row justify-content-center p-2">
+                <input type="text" name="email" id="email" placeholder="MP Account Email" class="form-control col-5" autofocus>
+            </div>
+
+            <div class="row justify-content-center" id="status" style="font-size: small;"></div>
+
+            <div class="row justify-content-center p-4">
+                <button class="btn btn-primary"  onclick="validateForm();"><b>Visualize!</b></button>
+            </div>
+            </form>
+
+            <!-- Form Validation -->
+            <script src="static/scripts.js"></script>
+            <script>
+                function validateForm() {
+                    if (!checkEmail()){
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            </script>
+            <!-- Privacy and how it works info -->
+            <div class="text-center text-white" style="font-size: small;">
+                <div class="row">
+                    <div class="col" id="howlink">
+                        <a href="#" onclick="toggle('how');">How It Works</a>
+                    </div>
+                </div>
+                <div class="row p-3" id="how" style="display: none;">
+                    Using your email address, this app gets your tick list from MountainProject.com.
+                    It processes that data and does some graphing magic, using Python.
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <a href="#" onclick="toggle('privacy')" id="privacylink">Privacy</a>
+                    </div>
+                </div>
+                <div class="row p-3" id="privacy" style="display: none;">
+                    Other than your email address, this app only uses publicy available information (via MountainProject.com).
+                    It does not store or use your address (ever!) or use it for anything other than looking up your ID on Mountain Project.
+                    The app does store your tick list in a database, to facilitate graphing and other data functions.
+                    By submiting your email address, you consent to your data being used in this way.
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
