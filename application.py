@@ -8,14 +8,14 @@ Code by Zach Wahrer.
 import os
 import re
 from flask import Flask, render_template, request, redirect
-from helpers import get_userid, ticklist
+from helpers import get_userid, ticklist, db_load
 
 
 app = Flask(__name__)
 
 # Make sure MP API Key is set
-if not os.environ.get("MP_KEY"):
-    raise RuntimeError("MP_KEY not set")
+if not os.environ.get("MPV_MP_KEY"):
+    raise RuntimeError("MPV_MP_KEY not set")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -30,25 +30,41 @@ def data():
     if request.method == "POST":
 
         email = request.form.get("email")
-        # Input validation - Thanks to emailregex.com for the regrex
-        if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email):
-            return render_template("error.html", data="Please enter a valid email.")
+        # Input validation - Thanks to emailregex.com for the regex
+        regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+        if not re.match(regex, email):
+            e = "Please enter a valid email."
+            return render_template("error.html", data=e)
 
         # Get user and id from MP
         userid = get_userid(request.form.get("email"))
+        # Check for a successful return from MP
+        if userid["status"] == 1:
+            e = (f"Connection error. MP Reply: {userid['code']}." +
+                 " Please make sure you supplied a valid API key.")
+            return render_template("error.html", data=e)
+        elif userid["status"] == 2:
+            e = "There is no user connected to that email. Please try again."
+            return render_template("error.html", data=e)
 
-        # Check for a successful return
-        if userid[0] == 1:
-            return render_template("error.html",
-                                   data=f"Connection error. MP Reply: {userid[1]} Please make sure you supplied a valid API key.")
-        elif userid[0] == 2:
-            return render_template("error.html",
-                                   data="There is no user connected to that email. Please try again.")
+        # Get ticklist from MP via CSV
+        csv = ticklist(userid["name"], userid["id"])
+        # Check for successful data return
+        if csv["status"] == 1:
+            e = "Error retriving ticklist. Please try again later."
+            return render_template("error.html", data=e)
 
         # Put user's ticklist into the database
-            # ticklist()
+        database = db_load(userid["id"], csv["data"])
+        # Check for database success
+        if database["status"] == 1:
+            e = f"Database error: {database['error']}"
+            return render_template("error.html", data=e)
 
-        return render_template("data.html", username=userid[1])
+        # Show final output
+        return render_template("data.html",
+                               username=userid["name"], ticks=csv["data"])
 
+    # Send them back to the index if they try to GET
     else:
         return redirect("/")

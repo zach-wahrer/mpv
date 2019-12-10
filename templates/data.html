@@ -10,9 +10,13 @@
                 <div class="row justify-content-center p-4">
                     <h1 style="color: white;">{{ username }}'s Stats</h1>
                 </div>
-                <div class="row justify-content-center">
-
-                </div>
+                <!-- <div class="row justify-content-center"> -->
+                    {% for row in ticks %}
+                        <div class="row">
+                            {{ row }}
+                        </div>
+                    {% endfor %}
+                <!-- </div> -->
             </div>
         </div>
     </div>
