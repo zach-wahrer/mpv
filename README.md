@@ -16,16 +16,28 @@ MPV is currently in the early stages of development. If you'd like to help out, 
   2. OS
   3. Requests
   4. Re
-* MySQL (*Coming soon*)
+  5. CSV
+  6. [MySQL Connector](https://www.mysql.com/products/connector/)
+* MySQL
 
 ### Installing
-Running application.py with Flask will get you up and running. Configuring the `MP_KEY` environment variable as a MP API key is required. Get one: [https://www.mountainproject.com/data].
+1. On your MySQL server, create a table called `mpv. Make sure `Collation` is set to `utf8_unicode_ci`. Create a user and give them access to it.
+
+2. Open `helpers.py` and change the `MYSQL_USER`, `MYSQL_ADDRESS` variables to your new username and server address. Do the same for `setup/db_setup.py`.
+
+3. Export your password to the `MPV_MYSQL_PASSWD` environment variable.
+
+4. From the `setup` folder, run `python3 db_setup.py`. This will create and populate the required key tables in the MPV database.
+
+5. Next, configure the `MPV_MP_KEY` environment variable as a Mountain Project API key. You can get one [here](https://www.mountainproject.com/data).
+
+6. Now, run `application.py` with Flask and you should be set!
 
 ## Built With
 ---
 * Python3 - The controller
 * Flask - The web framework
-* MySQL - The database (*Coming soon*)
+* MySQL - The database
 * Javascript - Front-end functions
 
 ## Authors
@@ -38,4 +50,4 @@ MPV is licensed under the GNU General Public License. Check out the [LICENSE](LI
 
 ## Acknowledgments
 ---
-* Thanks to [emailregex.com](https://emailregex.com/) for the regrex code to validate email addresses (used in both Python and Javascript).
+* Thanks to [emailregex.com](https://emailregex.com/) for the regex code to validate email addresses (used in both Python and Javascript).

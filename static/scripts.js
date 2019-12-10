@@ -4,7 +4,7 @@ function checkEmail() {
 
     // If email address is not blank
     if (document.getElementById("email").value) {
-        // Check to make sure it is valid, thanks emailregex.com for the regrex
+        // Check to make sure it is valid, thanks emailregex.com for the regex
         if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(document.getElementById("email").value)) {
             status.innerHTML = "Thanks! Your data will display shortly.";
             status.style.color = "lightgreen";
