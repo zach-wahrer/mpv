@@ -48,14 +48,14 @@ def data():
             return render_template("error.html", data=e)
 
         # Get ticklist from MP via CSV
-        csv_data = ticklist(userid["name"], userid["id"])
+        csv = ticklist(userid["name"], userid["id"])
         # Check for successful data return
-        if csv_data["status"] == 1:
+        if csv["status"] == 1:
             e = "Error retriving ticklist. Please try again later."
             return render_template("error.html", data=e)
 
         # Put user's ticklist into the database
-        database = db_load(userid["id"], csv_data)
+        database = db_load(userid["id"], csv["data"])
         # Check for database success
         if database["status"] == 1:
             e = f"Database error: {database['error']}"
@@ -63,7 +63,7 @@ def data():
 
         # Show final output
         return render_template("data.html",
-                               username=userid["name"], ticks=csv_data["data"])
+                               username=userid["name"], ticks=csv["data"])
 
     # Send them back to the index if they try to GET
     else:

@@ -77,15 +77,16 @@ def main():
             values = list()
             insert = "INSERT INTO `%s` " % (i)
             if i == "style":
-                values = ["solo", "tr", "follow", "lead"]
+                values = ["Solo", "TR", "Follow", "Lead", "Flash",
+                          "Attempt", "Send"]
                 insert += "(`style`) VALUES"
             elif i == "lead_style":
-                values = ["onsight", "flash", "redpoint", "pinkpoint",
-                          "fell/hung"]
+                values = ["Onsight", "Flash", "Redpoint", "Pinkpoint",
+                          "Fell/Hung"]
                 insert += "(`lead_style`) VALUES"
             elif i == "type":
-                values = ["sport", "trad", "boulder", "tr", "aid",
-                          "alpine", "ice", "mixed", "snow"]
+                values = ["Sport", "Trad", "Boulder", "TR", "Aid",
+                          "Alpine", "Ice", "Mixed", "Snow"]
                 insert += "(`type`) VALUES"
             elif i == "code":
                 try:

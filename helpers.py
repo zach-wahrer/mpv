@@ -70,7 +70,7 @@ def ticklist(username, id):
 
     # Remove unneded data fields
     # Delete in reverse order to make field posistions simpler
-    remove = [12, 8, 7, 6, 4, 3]
+    remove = [12, 8, 7, 6, 4, 3, 2]
     for row in ticklist:
         for i in remove:
             del row[i]
@@ -103,7 +103,6 @@ def db_load(userid, data):
                 `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
                 `date` DATE NOT NULL,
                 `name` CHAR(100) CHARACTER SET utf8 NOT NULL,
-                `grade` VARCHAR(50) CHARACTER SET utf8 NOT NULL,
                 `pitches` SMALLINT UNSIGNED NOT NULL,
                 `style` TINYINT UNSIGNED NULL,
                 `lead_style` TINYINT UNSIGNED NULL,
@@ -113,22 +112,80 @@ def db_load(userid, data):
                 PRIMARY KEY(`id`))"""
             cursor.execute(create, (userid,))
 
-            # Load data into table
-            tmp = "try2"
-            # for row in data:
-            insert = """INSERT INTO `%s` (`date`, `name`, `grade`,
-                `pitches`, `style`, `lead_style`, `type`, `height`,
-                `code`) VALUES ('2019-11-11', %s, '5.10', '1', NULL, NULL,
-                '1', '50', '10000');"""
-            cursor.execute(insert, (userid, tmp))
-            # Close database
-            cursor.close()
-            connection.close()
+            # Get value pairs for index tables
+            pairs = get_pairs(cursor)
 
+            # Load data into table
+            for row in data:
+                make_sql_insert(cursor, pairs, userid, row)
+
+            # Close database
+            db_close(cursor, connection)
+            # Return success
             return {"status": 0}
 
     # Handle database errors if they occur
     except Error as e:
-        cursor.close()
-        connection.close()
+        db_close(cursor, connection)
         return {"status": 1, "error": e}
+
+
+def get_pairs(cursor):
+    """Get index/value pair route data identifiers from MySQL tables."""
+    # Set the tables to grab data from
+    tables = ("style", "lead_style", "type")
+    pairs = dict()
+    select = "SELECT * FROM `%s`;"
+    # Loop through each of the tables
+    for i in tables:
+        cursor.execute(select % (i,))
+        # Build the dictionary
+        pairs[i] = dict()
+        while True:
+            row = cursor.fetchone()
+            if row is None:
+                break
+            pairs[i][row[1]] = row[0]
+
+    return pairs
+
+
+def make_sql_insert(cursor, pairs, userid, row):
+    """Insert individual ticks into database."""
+    insert = """INSERT INTO `%s` (`date`, `name`, `pitches`, `style`,
+        `lead_style`, `type`, `height`, `code`)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+    # Find the right id in each dictionary
+    s_id = pairs["style"].get(row[3])
+    ls_id = pairs["lead_style"].get(row[4])
+
+    # Special processing for csv values in type
+    t_id = pairs["type"].get(row[5])
+    if t_id is None:
+        t_id = ""
+        # Thanks Sean Vieira for this list comprehension (via StackOverflow)
+        split = [x.strip() for x in row[5].split(',')]
+        # Build the id field as a csv
+        for i in split:
+            t_id += str(pairs["type"].get(i))
+            t_id += ","
+        t_id = t_id[:-1]
+
+    # Make correction for blank pitch value
+    if row[6]:
+        pitches = row[6]
+    else:
+        pitches = None
+
+    # Set the values tuple
+    values = (userid, row[0], row[1], row[2], s_id,
+              ls_id, t_id, pitches, row[7])
+
+    # Insert the row
+    cursor.execute(insert, values)
+
+
+def db_close(cursor, connection):
+    """Close down the database connection."""
+    cursor.close()
+    connection.close()
