@@ -17,6 +17,15 @@ if not os.environ.get("MPV_MYSQL_PASSWD"):
 MYSQL_PASSWD = os.environ.get("MPV_MYSQL_PASSWD")
 
 
+def db_connect():
+    """Create connection to database."""
+    connection = mysql.connector.connect(
+        host=MYSQL_ADDRESS, database=MYSQL_DATABASE,
+        user=MYSQL_USER, password=MYSQL_PASSWD)
+    connection.autocommit = True
+    return connection
+
+
 def get_userid(email):
     """
     Get username/id using email via MountainProject.com API.
@@ -68,7 +77,7 @@ def ticklist(username, id):
     csv_file = open('test_ticks.csv')
     ticklist = list(csv.reader(csv_file, delimiter=','))
 
-    # Remove unneded data fields
+    # Remove unneeded data fields
     # Delete in reverse order to make field posistions simpler
     remove = [12, 8, 7, 6, 4, 3, 2]
     for row in ticklist:
@@ -84,45 +93,39 @@ def db_load(userid, data):
     """Load CSV file into MySQL database."""
     # Connect to database
     try:
-        connection = mysql.connector.connect(
-            host=MYSQL_ADDRESS, database=MYSQL_DATABASE,
-            user=MYSQL_USER, password=MYSQL_PASSWD)
+        connection = db_connect()
+        cursor = connection.cursor()
 
-        if connection.is_connected():
-            # Initialize the cursor
-            connection.autocommit = True
-            cursor = connection.cursor()
+        # Drop current user table if it exists
+        cursor.execute("SHOW TABLES LIKE '%s';", (userid,))
+        if cursor.fetchone():
+            cursor.execute("DROP TABLE `%s`;", (userid,))
 
-            # Drop current user table if it exists
-            cursor.execute("SHOW TABLES LIKE '%s';", (userid,))
-            if cursor.fetchone():
-                cursor.execute("DROP TABLE `%s`;", (userid,))
+        # Create new user table
+        create = """CREATE TABLE `%s`(
+            `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `date` DATE NOT NULL,
+            `name` CHAR(100) CHARACTER SET utf8 NOT NULL,
+            `pitches` SMALLINT UNSIGNED NOT NULL,
+            `style` TINYINT UNSIGNED NULL,
+            `lead_style` TINYINT UNSIGNED NULL,
+            `type` VARCHAR(18) CHARACTER SET utf8 NOT NULL,
+            `height` SMALLINT UNSIGNED NULL,
+            `code` MEDIUMINT UNSIGNED NOT NULL,
+            PRIMARY KEY(`id`))"""
+        cursor.execute(create, (userid,))
 
-            # Create new user table
-            create = """CREATE TABLE `%s`(
-                `id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                `date` DATE NOT NULL,
-                `name` CHAR(100) CHARACTER SET utf8 NOT NULL,
-                `pitches` SMALLINT UNSIGNED NOT NULL,
-                `style` TINYINT UNSIGNED NULL,
-                `lead_style` TINYINT UNSIGNED NULL,
-                `type` VARCHAR(18) CHARACTER SET utf8 NOT NULL,
-                `height` SMALLINT UNSIGNED NULL,
-                `code` MEDIUMINT UNSIGNED NOT NULL,
-                PRIMARY KEY(`id`))"""
-            cursor.execute(create, (userid,))
+        # Get value pairs for index tables
+        pairs = get_pairs(cursor)
 
-            # Get value pairs for index tables
-            pairs = get_pairs(cursor)
+        # Load data into table
+        for row in data:
+            make_sql_insert(cursor, pairs, userid, row)
 
-            # Load data into table
-            for row in data:
-                make_sql_insert(cursor, pairs, userid, row)
-
-            # Close database
-            db_close(cursor, connection)
-            # Return success
-            return {"status": 0}
+        # Close database
+        db_close(cursor, connection)
+        # Return success
+        return {"status": 0}
 
     # Handle database errors if they occur
     except Error as e:

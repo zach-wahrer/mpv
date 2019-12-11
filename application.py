@@ -8,7 +8,8 @@ Code by Zach Wahrer.
 import os
 import re
 from flask import Flask, render_template, request, redirect
-from helpers import get_userid, ticklist, db_load
+from helpers import get_userid, ticklist, db_load, db_connect, db_close
+from graphing import test, height_climbed
 
 
 app = Flask(__name__)
@@ -54,16 +55,28 @@ def data():
             e = "Error retriving ticklist. Please try again later."
             return render_template("error.html", data=e)
 
-        # Put user's ticklist into the database
-        database = db_load(userid["id"], csv["data"])
-        # Check for database success
-        if database["status"] == 1:
-            e = f"Database error: {database['error']}"
-            return render_template("error.html", data=e)
+        # # Put user's ticklist into the database
+        # database = db_load(userid["id"], csv["data"])
+        # # Check for database success
+        # if database["status"] == 1:
+        #     e = f"Database error: {database['error']}"
+        #     return render_template("error.html", data=e)
+
+        # Connect to database for graph and stats generation
+        connection = db_connect()
+        cursor = connection.cursor()
+
+        # Generate the stats
+        height = height_climbed(cursor, userid["id"])
+
+        # Close the connection to the database
+        db_close(cursor, connection)
 
         # Show final output
         return render_template("data.html",
-                               username=userid["name"], ticks=csv["data"])
+                               username=userid["name"],
+                               total_height=height["total"],
+                               yearly_height=height["yearly"])
 
     # Send them back to the index if they try to GET
     else:

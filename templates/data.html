@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Visulization{% endblock %}
+{% block title %}Visualization{% endblock %}
 
 {% block main %}
 
@@ -10,13 +10,14 @@
                 <div class="row justify-content-center p-4">
                     <h1 style="color: white;">{{ username }}'s Stats</h1>
                 </div>
-                <!-- <div class="row justify-content-center"> -->
-                    {% for row in ticks %}
-                        <div class="row">
-                            {{ row }}
-                        </div>
-                    {% endfor %}
-                <!-- </div> -->
+                <div class="row justify-content-center">
+                    Total Height: {{ total_height }} feet
+                </div>
+                {% for year, height in yearly_height.items() %}
+                    <div class="row justify-content-center">
+                        {{ year }}: {{ height }}
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
