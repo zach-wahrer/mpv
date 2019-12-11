@@ -11,6 +11,7 @@ from flask import Flask, render_template, request, redirect
 from helpers import get_userid, ticklist, db_load, db_connect, db_close
 from graphing import test, height_climbed
 
+import sys
 
 app = Flask(__name__)
 
@@ -52,15 +53,18 @@ def data():
         csv = ticklist(userid["name"], userid["id"])
         # Check for successful data return
         if csv["status"] == 1:
-            e = "Error retriving ticklist. Please try again later."
+            e = (f"Error retriving ticklist. MP Reply: {csv['code']}." +
+                 " Please try again later.")
             return render_template("error.html", data=e)
 
-        # # Put user's ticklist into the database
-        # database = db_load(userid["id"], csv["data"])
-        # # Check for database success
-        # if database["status"] == 1:
-        #     e = f"Database error: {database['error']}"
-        #     return render_template("error.html", data=e)
+        # Check for dev mode
+        if os.environ.get("MPV_DEV") != "on":
+            # Put user's ticklist into the database
+            database = db_load(userid["id"], csv["data"])
+            # Check for database success
+            if database["status"] == 1:
+                e = f"Database error: {database['error']}"
+                return render_template("error.html", data=e)
 
         # Connect to database for graph and stats generation
         connection = db_connect()

@@ -32,25 +32,31 @@ def get_userid(email):
 
     (https://www.mountainproject.com/data)
     """
-    # Get API Key
-    API_KEY = os.environ.get("MPV_MP_KEY")
+    # Check for dev mode
+    if os.environ.get("MPV_DEV") != "on":
+        # Get API Key
+        API_KEY = os.environ.get("MPV_MP_KEY")
 
-    # Get info from MountainProject
-    try:
-        reply = requests.get(f"https://www.mountainproject.com/data/" +
-                             f"get-user?email={email}&key={API_KEY}")
-        reply.raise_for_status()
-    except requests.RequestException:
-        return {"status": 1, "code": reply.status_code}
+        # Get info from MountainProject
+        try:
+            reply = requests.get(f"https://www.mountainproject.com/data/" +
+                                 f"get-user?email={email}&key={API_KEY}")
+            reply.raise_for_status()
+        except requests.RequestException:
+            return {"status": 1, "code": reply.status_code}
 
-    # Parse the reply
-    try:
-        data = reply.json()
-    except (KeyError, TypeError, ValueError):
-        return {"status": 2}
+        # Parse the reply
+        try:
+            data = reply.json()
+        except (KeyError, TypeError, ValueError):
+            return {"status": 2}
 
-    # Format the successful return
-    return {"status": 0, "name": data['name'], "id": data['id']}
+        # Format the successful return
+        return {"status": 0, "name": data['name'], "id": data['id']}
+
+    # Run in dev mode
+    else:
+        return {"status": 0, "name": "Dev", "id": 1111}
 
 
 def ticklist(username, id):
@@ -59,23 +65,25 @@ def ticklist(username, id):
 
     i.e. https://www.mountainproject.com/user/106610639/zach-wahrer/tick-export
     """
-    # REMOVE COMMENTING BELOW TO ENABLE DOWNLOADS FROM MP
-    # url = f"https://www.mountainproject.com/user/{id}/{username}/tick-export"
+    # Check for dev mode
+    if os.environ.get("MPV_DEV") != "on":
+        url = (f"https://www.mountainproject.com/user/" +
+               f"{id}/{username}/tick-export")
+        # Get the csv file
+        try:
+            download = requests.get(url)
+            download.raise_for_status()
+        except requests.RequestException:
+            return {"status": 1, "code": download.status_code}
 
-    # # Get the csv file
-    # try:
-    #     download = requests.get(url)
-    # except requests.RequestException:
-    #     return [1, reply.status_code]
-    #
-    # # Decode the file and split it into a csv list
-    # decoded = download.content.decode('utf-8')
-    # ticklist = list(csv.reader(decoded.splitlines(), delimiter=','))
+        # Decode the file and split it into a csv list
+        decoded = download.content.decode('utf-8')
+        ticklist = list(csv.reader(decoded.splitlines(), delimiter=','))
 
-    # LOAD FROM FILE TO DECREASE UNNEEDED TEST TRAFFIC TO MP
-    # REMOVE ONCE READY TO GO LIVE
-    csv_file = open('test_ticks.csv')
-    ticklist = list(csv.reader(csv_file, delimiter=','))
+    else:
+        # Load from file if dev mode active
+        csv_file = open('test_ticks.csv')
+        ticklist = list(csv.reader(csv_file, delimiter=','))
 
     # Remove unneeded data fields
     # Delete in reverse order to make field posistions simpler
