@@ -18,6 +18,7 @@ MPV is currently in the early stages of development. If you'd like to help out, 
   4. Re
   5. CSV
   6. [MySQL Connector](https://www.mysql.com/products/connector/)
+  7. Bokeh (v1.4.0)
 * MySQL
 
 ### Installing
@@ -33,14 +34,20 @@ MPV is currently in the early stages of development. If you'd like to help out, 
 
 6. Now, run `application.py` with Flask and you should be set!
 
+### Development Mode
+To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` environment variable to `on`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.
+
+Note: Make sure you run the program normally at least once to build a suitable user database before enabling dev mode. You will have to rename that database `1111` in order for the program to function.  
+
 ## Built With
 ---
 * Python3 - The controller
 * Flask - The web framework
+* Bokeh - The visualizer
 * MySQL - The database
 * Javascript - Front-end functions
 
-## Authors
+## Author
 ---
 **Zach Wahrer** - [zachtheclimber](https://github.com/zachtheclimber)
 
