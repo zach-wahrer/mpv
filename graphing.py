@@ -1,21 +1,8 @@
 """Graphing functions for the MPV web app."""
 
-from matplotlib.figure import Figure
-from helpers import db_connect, db_close
-import sys
+from bokeh.plotting import figure
+from bokeh.embed import components
 
-
-def test(cursor):
-    """Test database connection."""
-    cursor.execute("SELECT `id` FROM `style`;")
-    values = cursor.fetchall()
-    return values
-
-
-# def kind_of_climber():
-#     """Returns the most ticked style of climb."""
-#     connection = db_connect()
-#     cursor = connection.cursor()
 
 def height_climbed(cursor, userid):
     """Compute total height climbed."""
@@ -42,7 +29,24 @@ def height_climbed(cursor, userid):
             total_height += row[0]
             # Add to yearly
             year_height = add_to_year(year, row[0], year_height)
-    return {"total": total_height, "yearly": year_height}
+
+    years = list(year_height.keys())
+    height = list(year_height.values())
+
+    # Generate a graph
+    TOOLTIPS = [
+        ("Year", "@x"),
+        ("Height", "@y")
+    ]
+    plot = figure(title="Height Per Year", plot_height=400,
+                  sizing_mode='scale_width', tooltips=TOOLTIPS)
+    plot.line(years, height, line_width=2, line_color="blue")
+    plot.circle(years, height, size=8, fill_color="white",
+                line_color="blue")
+    plot.yaxis.axis_label = 'Feet'
+    script, div = components(plot)
+
+    return {"total": total_height, "plot": [script, div]}
 
 
 def add_to_year(year, height, year_height):

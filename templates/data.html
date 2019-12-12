@@ -11,13 +11,13 @@
                     <h1 style="color: white;">{{ username }}'s Stats</h1>
                 </div>
                 <div class="row justify-content-center">
-                    Total Height: {{ total_height }} feet
+                    <h4>Total Height Climbed:<br> {{ total_height }} feet</h4>
                 </div>
-                {% for year, height in yearly_height.items() %}
-                    <div class="row justify-content-center">
-                        {{ year }}: {{ height }}
-                    </div>
-                {% endfor %}
+                <div class="row w-75 p-3 mx-auto">
+                    {% for plot in plots %}
+                            {{plot | safe}}
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

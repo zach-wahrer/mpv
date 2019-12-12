@@ -18,7 +18,7 @@ MPV is currently in the early stages of development. If you'd like to help out, 
   4. Re
   5. CSV
   6. [MySQL Connector](https://www.mysql.com/products/connector/)
-  7. matplotlib
+  7. Bokeh (v1.4.0)
 * MySQL
 
 ### Installing
@@ -43,10 +43,11 @@ Note: Make sure you run the program normally at least once to build a suitable u
 ---
 * Python3 - The controller
 * Flask - The web framework
+* Bokeh - The visualizer
 * MySQL - The database
 * Javascript - Front-end functions
 
-## Authors
+## Author
 ---
 **Zach Wahrer** - [zachtheclimber](https://github.com/zachtheclimber)
 

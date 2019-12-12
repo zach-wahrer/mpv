@@ -9,9 +9,7 @@ import os
 import re
 from flask import Flask, render_template, request, redirect
 from helpers import get_userid, ticklist, db_load, db_connect, db_close
-from graphing import test, height_climbed
-
-import sys
+from graphing import height_climbed
 
 app = Flask(__name__)
 
@@ -70,17 +68,19 @@ def data():
         connection = db_connect()
         cursor = connection.cursor()
 
-        # Generate the stats
+        # Generate the stats and draw graph
         height = height_climbed(cursor, userid["id"])
 
         # Close the connection to the database
         db_close(cursor, connection)
 
+        # Add commas to the total height
+        total_height = format(height["total"], ',d')
         # Show final output
         return render_template("data.html",
                                username=userid["name"],
-                               total_height=height["total"],
-                               yearly_height=height["yearly"])
+                               total_height=total_height,
+                               plots=height["plot"])
 
     # Send them back to the index if they try to GET
     else:
