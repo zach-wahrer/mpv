@@ -12,13 +12,13 @@ MPV is currently in the early stages of development. If you'd like to help out, 
 **Current requirements:**
 * Python3
 * Python3 Modules
-  1. Flask
-  2. OS
-  3. Requests
-  4. Re
-  5. CSV
-  6. [MySQL Connector](https://www.mysql.com/products/connector/)
-  7. Bokeh (v1.4.0)
+  - Flask
+  - OS
+  - Requests
+  - Re
+  - CSV
+  - [MySQL Connector](https://www.mysql.com/products/connector/)
+  - Bokeh (v1.4.0)
 * MySQL
 
 ### Installing
@@ -58,3 +58,4 @@ MPV is licensed under the GNU General Public License. Check out the [LICENSE](LI
 ## Acknowledgments
 ---
 * Thanks to [emailregex.com](https://emailregex.com/) for the regex code to validate email addresses (used in both Python and Javascript).
+* Another thanks goes out to Doug Neiner and Chris Coyier for the awesome [CSS background code](https://css-tricks.com/perfect-full-page-background-image/).

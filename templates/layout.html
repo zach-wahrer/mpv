@@ -27,8 +27,14 @@
         <title>MPV: {% block title %}{% endblock %}</title>
 
     </head>
-    <main class="h-100 d-inline-block w-100">
-        {% block main %} {% endblock %}
-    </main>
-
+    <body>
+        <img src="static/background.jpg" class="bg" />
+        <div class="container-fluid h-100">
+            <div class="row h-100 align-items-center text-white">
+                <div class="col-12">
+                {% block main %} {% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

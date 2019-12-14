@@ -4,7 +4,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 
 
-def height_climbed(cursor, userid):
+def height_climbed(cursor, userid, units):
     """Compute total height climbed."""
     select = """SELECT `height`, `type`.`type`, `date` FROM `%s`
             JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`"""
@@ -33,6 +33,12 @@ def height_climbed(cursor, userid):
     years = list(year_height.keys())
     height = list(year_height.values())
 
+    # Convert height to meters if required
+    if units == "meters":
+        for i in range(0, len(height)):
+            height[i] = int(height[i] / 3.28)
+        total_height = int(total_height / 3.28)
+
     # Generate a graph
     TOOLTIPS = [
         ("Year", "@x"),
@@ -43,7 +49,12 @@ def height_climbed(cursor, userid):
     plot.line(years, height, line_width=2, line_color="blue")
     plot.circle(years, height, size=8, fill_color="white",
                 line_color="blue")
-    plot.yaxis.axis_label = 'Feet'
+    # Set label for selected units
+    if units == "meters":
+        plot.yaxis.axis_label = 'Meters'
+    else:
+        plot.yaxis.axis_label = 'Feet'
+    plot.toolbar.active_drag = None
     script, div = components(plot)
 
     return {"total": total_height, "plot": [script, div]}

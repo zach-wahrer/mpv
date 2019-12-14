@@ -3,17 +3,16 @@
 {% block title %}Visulization{% endblock %}
 
 {% block main %}
-
-    <div class="bg_img d-flex align-items-top vh-100">
-        <div class="container p-3 graybox">
-            <div class="text-center text-white">
-                <div class="row justify-content-center p-4">
-                    <h1 style="color: white;">Error</h1>
-                </div>
-                <div class="row justify-content-center">
-                    {{ data }}
-                </div>
+    <div class="col-xs-0"></div>
+    <div class="col-md-5 col-sm-7 p-2 graybox round mx-auto">
+        <div class="text-center">
+            <div class="row justify-content-center p-4">
+                <h1>Error</h1>
+            </div>
+            <div class="row justify-content-center p-3">
+                {{ data }}
             </div>
         </div>
     </div>
+    <div class="col-xs-0"></div>
 {% endblock %}

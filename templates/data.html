@@ -3,22 +3,21 @@
 {% block title %}Visualization{% endblock %}
 
 {% block main %}
-
-    <div class="bg_img d-flex align-items-top vh-100">
-        <div class="container p-3 graybox">
-            <div class="text-center text-white">
-                <div class="row justify-content-center p-4">
-                    <h1 style="color: white;">{{ username }}'s Stats</h1>
-                </div>
-                <div class="row justify-content-center">
-                    <h4>Total Height Climbed:<br> {{ total_height }} feet</h4>
-                </div>
-                <div class="row w-75 p-3 mx-auto">
-                    {% for plot in plots %}
-                            {{plot | safe}}
-                    {% endfor %}
-                </div>
+    <div class="col-xs-0"></div>
+    <div class="col-md-8 col-sm-9 p-3 graybox round mx-auto">
+        <div class="text-center">
+            <div class="row justify-content-center p-4">
+                <h1>{{ username }}'s Stats</h1>
+            </div>
+            <div class="row justify-content-center">
+                <h4>Total Height Climbed:<br> {{ total_height }} {{ units }}</h4>
+            </div>
+            <div class="row w-75 p-3 mx-auto">
+                {% for plot in plots %}
+                        {{plot | safe}}
+                {% endfor %}
             </div>
         </div>
     </div>
+    <div class="col-xs-0"></div>
 {% endblock %}

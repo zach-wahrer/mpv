@@ -30,6 +30,7 @@ def data():
     if request.method == "POST":
 
         email = request.form.get("email")
+        units = request.form.get("units")
         # Input validation - Thanks to emailregex.com for the regex
         regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
         if not re.match(regex, email):
@@ -69,7 +70,7 @@ def data():
         cursor = connection.cursor()
 
         # Generate the stats and draw graph
-        height = height_climbed(cursor, userid["id"])
+        height = height_climbed(cursor, userid["id"], units)
 
         # Close the connection to the database
         db_close(cursor, connection)
@@ -80,6 +81,7 @@ def data():
         return render_template("data.html",
                                username=userid["name"],
                                total_height=total_height,
+                               units=units,
                                plots=height["plot"])
 
     # Send them back to the index if they try to GET
