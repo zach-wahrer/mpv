@@ -22,7 +22,7 @@ MPV is currently in the early stages of development. If you'd like to help out, 
 * MySQL
 
 ### Installing
-1. On your MySQL server, create a table called `mpv. Make sure `Collation` is set to `utf8_unicode_ci`. Create a user and give them access to it.
+1. On your MySQL server, create a table called `mpv`. Make sure `Collation` is set to `utf8_unicode_ci`. Create a user and give them access to it.
 
 2. Open `helpers.py` and change the `MYSQL_USER`, `MYSQL_ADDRESS` variables to your new username and server address. Do the same for `setup/db_setup.py`.
 
