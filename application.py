@@ -9,7 +9,7 @@ import os
 import re
 from flask import Flask, render_template, request, redirect
 from helpers import get_userid, ticklist, db_load, db_connect, db_close
-from graphing import height_climbed
+from graphing import height_climbed, pitches_climbed
 
 app = Flask(__name__)
 
@@ -59,30 +59,31 @@ def data():
         # Check for dev mode
         if os.environ.get("MPV_DEV") != "on":
             # Put user's ticklist into the database
-            database = db_load(userid["id"], csv["data"])
+            database = db_load(userid['id'], csv['data'])
             # Check for database success
-            if database["status"] == 1:
+            if database['status'] == 1:
                 e = f"Database error: {database['error']}"
-                return render_template("error.html", data=e)
+                return render_template('error.html', data=e)
 
         # Connect to database for graph and stats generation
         connection = db_connect()
         cursor = connection.cursor()
 
         # Generate the stats and draw graph
-        height = height_climbed(cursor, userid["id"], units)
+        height = height_climbed(cursor, userid['id'], units)
+        pitches = pitches_climbed(cursor, userid['id'])
 
         # Close the connection to the database
         db_close(cursor, connection)
 
-        # Add commas to the total height
-        total_height = format(height["total"], ',d')
         # Show final output
         return render_template("data.html",
-                               username=userid["name"],
-                               total_height=total_height,
+                               username=userid['name'],
+                               total_height=height['total'],
                                units=units,
-                               plots=height["plot"])
+                               height=height['plot'],
+                               total_pitches=pitches['total'],
+                               pitches=pitches['plot'])
 
     # Send them back to the index if they try to GET
     else:

@@ -19,7 +19,7 @@
 
         <div class="row justify-content-center p-2">
             <select class="form-control col-md-5" name="units">
-                <option value="feet" disabled selected>Units</option>
+                <option value="feet" selected>-Units-</option>
                 <option value="feet">Feet</option>
                 <option value="meters">Meters</option>
             </select>
@@ -46,8 +46,8 @@
         <!-- Privacy and how it works info -->
         <div class="text-center p-3" style="font-size: small;">
             <div class="row">
-                <div class="col" id="howlink">
-                    <a href="#" onclick="toggle('how');">How It Works</a>
+                <div class="col">
+                    <a href="#" onclick="toggle('how');" id="howlink">How It Works</a>
                 </div>
             </div>
             <div class="row p-3" id="how" style="display: none;">
@@ -67,7 +67,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <a href="#" onclick="toggle('code')" id="privacylink">Code</a>
+                    <a href="#" onclick="toggle('code')" id="codelink">Code</a>
                 </div>
             </div>
             <div class="row p-3" id="code" style="display: none;">
