@@ -1,6 +1,6 @@
 """Graphing functions for the MPV web app."""
 
-from bokeh.models import ColumnDataSource, HoverTool, Legend
+from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.transform import dodge
@@ -136,12 +136,17 @@ def pitches_climbed(cursor, userid):
                     top='problems', bottom=0, width=0.4, color="orange",
                     legend_label="Problems",
                     source=ColumnDataSource(data=data))
+
     plot.yaxis.axis_label = 'Amount'
     plot.toolbar.active_drag = None
-    legend = Legend(location="top_left", margin=0, label_text_font_size="8pt",
-                    label_text_baseline="bottom", glyph_height=6,
-                    glyph_width=6, click_policy="hide", label_height=4)
-    plot.add_layout(legend)
+    plot.legend.location = "top_left"
+    plot.legend.margin = 0
+    plot.legend.label_text_font_size = "8pt"
+    plot.legend.label_text_baseline = "bottom"
+    plot.legend.glyph_height = 6
+    plot.legend.glyph_width = 6
+    plot.legend.click_policy = "hide"
+    plot.legend.label_height = 4
     plot.add_tools(HoverTool(tooltips=TOOLTIPS, renderers=[re1, re2]))
     script, div = components(plot)
 
