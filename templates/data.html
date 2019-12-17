@@ -12,9 +12,12 @@
                 <h1>{{ username }}'s Stats</h1>
             </div>
         </div>
+
+        <div class="row p-3 justify-content-center"><h2>- Height -</h2></div>
+
         <div class="row text-center p-2">
             <div class="col">
-                <h4>Total Climbed:<br>
+                <h4>Total:<br>
                     {{ total_height }} {{ units }}<br>
                     in {{ total_pitches }} pitches / problems.</h4>
             </div>
@@ -30,6 +33,18 @@
                     {{ row | safe }}
                 {% endfor %}
             </div>
+        </div>
+
+        <div class="row p-3 justify-content-center"><h2>- Grades -</h2></div>
+
+        <div class="row p-3 mx-auto">
+        {% for scatter in scatters %}
+            <div class="col-md-6 p-1 justify-content-start">
+                {% for row in scatter %}
+                    {{ row | safe }}
+                {% endfor %}
+            </div>
+        {% endfor %}
         </div>
     </div>
     <div class="col-xs-0"></div>

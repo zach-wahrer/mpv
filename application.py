@@ -9,7 +9,7 @@ import os
 import re
 from flask import Flask, render_template, request, redirect
 from helpers import get_userid, ticklist, db_load, db_connect, db_close
-from graphing import height_climbed, pitches_climbed
+from graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 
 app = Flask(__name__)
 
@@ -73,6 +73,10 @@ def data():
         height = height_climbed(cursor, userid['id'], units)
         pitches = pitches_climbed(cursor, userid['id'])
 
+        grade_scatters = list()
+        for type in get_types(cursor, userid['id']):
+            grade_scatters.append(grade_scatter(cursor, userid['id'], type))
+
         # Close the connection to the database
         db_close(cursor, connection)
 
@@ -83,7 +87,8 @@ def data():
                                units=units,
                                height=height['plot'],
                                total_pitches=pitches['total'],
-                               pitches=pitches['plot'])
+                               pitches=pitches['plot'],
+                               scatters=grade_scatters)
 
     # Send them back to the index if they try to GET
     else:

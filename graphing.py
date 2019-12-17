@@ -5,6 +5,8 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.transform import dodge
 
+TOOLS = "reset,pan,wheel_zoom,box_zoom,save"
+
 
 def height_climbed(cursor, userid, units):
     """Compute height climbed and make graph."""
@@ -38,7 +40,6 @@ def height_climbed(cursor, userid, units):
     for year in year_height.keys():
         total_height += year_height[year]
 
-    years = list(year_height.keys())
     height = list(year_height.values())
 
     # Convert height to meters if required
@@ -55,9 +56,8 @@ def height_climbed(cursor, userid, units):
         ("Year", "@x"),
         ("Height", "@y{0,0}")
     ]
-    tools = "reset,pan,wheel_zoom,box_zoom,save"
     plot = figure(title="Height Per Year", plot_height=400,
-                  sizing_mode='scale_both', tools=tools)
+                  sizing_mode='scale_both', tools=TOOLS)
     plot.line(years, height, line_width=2, line_color="blue")
     plot.circle(years, height, size=8, fill_color="white", line_color="blue")
     # Set label for selected units
@@ -112,8 +112,8 @@ def pitches_climbed(cursor, userid):
     # Generate graph
     TOOLTIPS = [
         ("Year", "@years"),
-        ("Routes", "@routes{0,0}"),
         ("Pitches", "@pitches{0,0}"),
+        ("Routes", "@routes{0,0}"),
         ("Problems", "@problems{0,0}")
     ]
     data = {'years': years,
@@ -121,10 +121,8 @@ def pitches_climbed(cursor, userid):
             'pitches': pitches,
             'problems': problems}
 
-    tools = "reset,pan,wheel_zoom,box_zoom,save"
-
     plot = figure(title="Pitches / Routes / Problems Per Year",
-                  plot_height=400, sizing_mode='stretch_both', tools=tools)
+                  plot_height=400, sizing_mode='stretch_both', tools=TOOLS)
 
     re1 = plot.vbar(x=dodge('years', -0.211, range=plot.x_range),
                     top='pitches', bottom=0, width=0.4, color="blue",
@@ -153,15 +151,74 @@ def pitches_climbed(cursor, userid):
     return {"total": sum[0], "plot": [script, div]}
 
 
+def grade_scatter(cursor, userid, type):
+    """Create grade scatter graph."""
+    # Get grades ticked each year
+    years = get_years(cursor, userid)
+    grades = get_grades(cursor, userid, type)
+    grade_data = list()
+    year_data = list()
+    select = """SELECT `code`.`code` FROM `%s`
+            JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
+            JOIN `mpv`.`code` ON `mpv`.`code`.`id` = `%s`.`code`
+            WHERE YEAR(`date`) = '%s' AND `type`.`type` = '%s'
+            ORDER BY `code`.`id` ASC;"""
+
+    for year in years:
+        cursor.execute(select % (userid, userid, userid, year, type))
+        for row in cursor.fetchall():
+            grade_data.append(row[0])
+            year_data.append(year)
+
+    data = {"years": year_data,
+            "grades": grade_data}
+
+    # Generate graph
+    plot = figure(title=(type + " Grades By Year"), y_range=grades,
+                  sizing_mode='stretch_both', tools=TOOLS)
+    plot.scatter('years', 'grades', size=14, alpha=0.2,
+                 source=ColumnDataSource(data=data))
+    plot.toolbar.active_drag = None
+    script, div = components(plot)
+
+    return [script, div]
+
+
+def get_grades(cursor, userid, type):
+    """Get all grades user has ticked of specified type."""
+    select = """SELECT DISTINCT `code`.`code`, `code`.`id` FROM `%s`
+             JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
+             JOIN `mpv`.`code` ON `mpv`.`code`.`id` = `%s`.`code`
+             WHERE `type`.`type` = '%s' ORDER BY `code`.`id` ASC;"""
+    cursor.execute(select % (userid, userid, userid, type))
+    grades = cursor.fetchall()
+    # Format the grades
+    for i in range(0, len(grades)):
+        grades[i] = grades[i][0]
+    return grades
+
+
 def get_years(cursor, userid):
     """Get all years for user."""
-    select = "SELECT DISTINCT YEAR(`date`) FROM `%s`"
+    select = "SELECT DISTINCT YEAR(`date`) FROM `%s`;"
     cursor.execute(select, (userid,))
     years = cursor.fetchall()
     # Format the get_years
     for i in range(0, len(years)):
         years[i] = years[i][0]
     return years
+
+
+def get_types(cursor, userid):
+    """Get all of the types of climbing a user did."""
+    select = """SELECT DISTINCT `type`.`type` FROM `%s`
+                JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`;"""
+    cursor.execute(select, (userid, userid))
+    types = cursor.fetchall()
+    # Format the types
+    for i in range(0, len(types)):
+        types[i] = types[i][0]
+    return types
 
 
 def add_to_year(year, height, year_height):
