@@ -3,22 +3,49 @@
 {% block title %}Visualization{% endblock %}
 
 {% block main %}
+    <script src="static/scripts.js"></script>
 
-    <div class="bg_img d-flex align-items-top vh-100">
-        <div class="container p-3 graybox">
-            <div class="text-center text-white">
-                <div class="row justify-content-center p-4">
-                    <h1 style="color: white;">{{ username }}'s Stats</h1>
-                </div>
-                <div class="row justify-content-center">
-                    <h4>Total Height Climbed:<br> {{ total_height }} feet</h4>
-                </div>
-                <div class="row w-75 p-3 mx-auto">
-                    {% for plot in plots %}
-                            {{plot | safe}}
-                    {% endfor %}
-                </div>
+    <div class="col-xs-0"></div>
+    <div class="col-md-8 col-sm-9 p-3 graybox round mx-auto">
+        <div class="row text-center justify-content-center p-4">
+            <div clas="col">
+                <h1>{{ username }}'s Stats</h1>
             </div>
         </div>
+
+        <div class="row p-3 justify-content-center"><h2>- Height -</h2></div>
+
+        <div class="row text-center p-2">
+            <div class="col">
+                <h4>Total:<br>
+                    {{ total_height }} {{ units }}<br>
+                    in {{ total_pitches }} pitches / problems.</h4>
+            </div>
+        </div>
+        <div class="row p-3 mx-auto">
+            <div class="col-md-6 p-1 justify-content-start">
+                {% for row in height %}
+                        {{ row | safe }}
+                {% endfor %}
+            </div>
+            <div class="col-md-6 p-1 justify-content-start">
+                {% for row in pitches %}
+                    {{ row | safe }}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row p-3 justify-content-center"><h2>- Grades -</h2></div>
+
+        <div class="row p-3 mx-auto">
+        {% for scatter in scatters %}
+            <div class="col-md-6 p-1 justify-content-start">
+                {% for row in scatter %}
+                    {{ row | safe }}
+                {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
     </div>
+    <div class="col-xs-0"></div>
 {% endblock %}

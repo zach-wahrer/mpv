@@ -3,63 +3,96 @@
 {% block title %}Welcome{% endblock %}
 
 {% block main %}
+    <div class="col-xs-0"></div>
+    <div class="col-md-5 col-sm-7 p-3 graybox round mx-auto">
+        <div class="row justify-content-center text-center p-4">
+            <h1>Mountain Project Visualizer</h1>
+        </div>
 
-    <div class="bg_img d-flex align-items-center vh-100">
-        <div class="container p-3 graybox">
-            <div class="row justify-content-center text-center p-4">
-                <h1 style="color: white;">Mountain Project Visualizer</h1>
-            </div>
+        <!-- User input form -->
+        <form action="/data" method="post" class="needs-validation" novalidate>
+        <div class="row justify-content-center p-2">
+            <input type="text" name="email" id="email" placeholder="MP Account Email" class="form-control col-md-5" autofocus>
+        </div>
 
-            <!-- User input form -->
-            <form action="/data" method="post" class="needs-validation" novalidate>
-            <div class="row justify-content-center p-2">
-                <input type="text" name="email" id="email" placeholder="MP Account Email" class="form-control col-5" autofocus>
-            </div>
+        <div class="row justify-content-center p-2">
+            <select class="form-control col-md-5" name="units">
+                <option value="feet" selected>-Units-</option>
+                <option value="feet">Feet</option>
+                <option value="meters">Meters</option>
+            </select>
+        </div>
 
-            <div class="row justify-content-center" id="status" style="font-size: small;"></div>
+        <div class="row justify-content-center" id="status" style="font-size: small;"></div>
 
-            <div class="row justify-content-center p-4">
-                <button class="btn btn-primary"  onclick="validateForm();"><b>Visualize!</b></button>
-            </div>
-            </form>
+        <div class="row justify-content-center p-2" id="vbutton">
+            <button class="btn btn-primary"  onclick="validateForm();"><b>Visualize!</b></button>
+        </div>
+        </form>
 
-            <!-- Form Validation -->
-            <script src="static/scripts.js"></script>
-            <script>
-                function validateForm() {
-                    if (!checkEmail()){
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    else {
-                        return true;
-                    }
+        <!-- Form Validation -->
+        <script src="static/scripts.js"></script>
+        <script>
+            function validateForm() {
+                if (!checkEmail()){
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
-            </script>
-            <!-- Privacy and how it works info -->
-            <div class="text-center text-white" style="font-size: small;">
-                <div class="row">
-                    <div class="col" id="howlink">
-                        <a href="#" onclick="toggle('how');">How It Works</a>
-                    </div>
-                </div>
-                <div class="row p-3" id="how" style="display: none;">
-                    Using your email address, this app gets your tick list from MountainProject.com.
-                    It processes that data and does some graphing magic, using Python.
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <a href="#" onclick="toggle('privacy')" id="privacylink">Privacy</a>
-                    </div>
-                </div>
-                <div class="row p-3" id="privacy" style="display: none;">
-                    Other than your email address, this app only uses publicy available information (via MountainProject.com).
-                    It does not store or use your address (ever!) or use it for anything other than looking up your ID on Mountain Project.
-                    The app does store your tick list in a database, to facilitate graphing and other data functions.
-                    By submiting your email address, you consent to your data being used in this way.
+                else {
+                    return true;
+                }
+            }
+        </script>
+        <!-- Privacy and how it works info -->
+        <div class="text-center p-3" style="font-size: small;">
+            <div class="row">
+                <div class="col">
+                    <a href="#" onclick="toggle('dont');" id="dontlink">Don't Have A MP Account?</a>
                 </div>
             </div>
+            <div class="row p-3" id="dont" style="display: none;">
+                If you would like to see the visualizer in action, but don't have a Mountain Project account,
+                you can take it for a test run.
+                <div class="p-2">
+                    <form action="/data" name="testrun" method="post">
+                        <input type="hidden" name="test" value="yes">
+                        <input type="submit" id="lbutton" value="Try it!" class="btn btn-danger btn-sm" onclick="loading();">
+                    </form>
+                    <div id="loadingframe"></div>
+                </div>
 
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="#" onclick="toggle('how');" id="howlink">How It Works</a>
+                </div>
+            </div>
+            <div class="row p-3" id="how" style="display: none;">
+                Using your email address, this app gets your tick list from MountainProject.com.
+                It processes that data and does some graphing magic, using Python.
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="#" onclick="toggle('privacy')" id="privacylink">Privacy</a>
+                </div>
+            </div>
+            <div class="row p-3" id="privacy" style="display: none;">
+                Other than your email address, this app only uses publicy available information (via MountainProject.com).
+                It does not store or use your address (ever!) or use it for anything other than looking up your ID on Mountain Project.
+                The app does store your tick list in a database, to facilitate graphing and other data functions.
+                By submiting your email address, you consent to your data being used in this way.
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a href="#" onclick="toggle('code')" id="codelink">Code</a>
+                </div>
+            </div>
+            <div class="row p-3" id="code" style="display: none;">
+                If you'd like to check out the source code or contribute to this project,
+                please head over to the <a href="https://github.com/zachtheclimber/mpv" target="_blank">
+                MPV repository</a>.
+            </div>
         </div>
     </div>
+    <div class="col-xs-0"></div>
 {% endblock %}

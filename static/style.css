@@ -1,23 +1,42 @@
-body, html {
+html, body {
     height: 100%;
 }
 
 h1 {
     letter-spacing: 5px;
-    text-shadow: 3px 2px #2b2b2b;
-}
-
-.bg_img {
-    /* Full size, scaleable background image */
-    background-image: url("background.jpg");
-    height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-
+    text-shadow: 2px 2px 8px #ffffff;
 }
 
 .graybox {
-    background-color:rgba(36, 36, 36, 0.90);
-    border-radius: 25px;
+    background-color:rgba(36, 36, 36, 0.7);
+
+}
+
+.round {
+    border-radius: 15px;
+}
+
+/* Thanks to Doug Neiner and Chris Coyier for this nifty bit of code */
+/* https://css-tricks.com/perfect-full-page-background-image */
+
+img.bg {
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+  img.bg {
+    left: 50%;
+    margin-left: -512px;   /* 50% */
+  }
 }
