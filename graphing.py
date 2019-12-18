@@ -1,5 +1,6 @@
 """Graphing functions for the MPV web app."""
 
+import statistics
 from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -158,29 +159,77 @@ def grade_scatter(cursor, userid, type):
     grades = get_grades(cursor, userid, type)
     grade_data = list()
     year_data = list()
-    select = """SELECT `code`.`code` FROM `%s`
+    year_mean = list()
+    year_mode = list()
+    year_mean_year = list()
+    year_mode_year = list()
+    select = """SELECT `code`.`id`, `code`.`code` FROM `%s`
             JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
             JOIN `mpv`.`code` ON `mpv`.`code`.`id` = `%s`.`code`
             WHERE YEAR(`date`) = '%s' AND `type`.`type` = '%s'
             ORDER BY `code`.`id` ASC;"""
     for year in years:
         cursor.execute(select % (userid, userid, userid, year, type))
+        tmp_grades = list()
         for row in cursor.fetchall():
-            grade_data.append(row[0])
+            grade_data.append(row[1])
             year_data.append(year)
+            tmp_grades.append(row[0])
 
-    data = {"years": year_data,
-            "grades": grade_data}
+        # Get mode/mean grade ticked for year
+        if tmp_grades:
+            mode = max(tmp_grades, key=tmp_grades.count)
+            mean = statistics.median(tmp_grades)
+            query = """SELECT `code` FROM `code`
+                    ORDER BY ABS(`code`.`id` - '%s') LIMIT 1;"""
+            cursor.execute(query % (mode,))
+            for row in cursor.fetchone():
+                year_mode.append(row)
+                year_mode_year.append(year)
+            cursor.execute(query % (mean,))
+            for row in cursor.fetchone():
+                year_mean.append(row)
+                year_mean_year.append(year)
 
     # Check for MP no code bug, return nothing if so
     if not grade_data:
         return False
 
     # Generate graph
+    data = {"years": year_data,
+            "grades": grade_data}
+    mean_mode = {"year_mode_year": year_mode_year,
+                 "year_mean_year": year_mean_year,
+                 "year_mode": year_mode,
+                 "year_mean": year_mean}
+    TOOLTIPS = [
+        ("Year:", "@year_mode_year"),
+        ("Most Ticked:", "@year_mode"),
+        ("Average Grade:", "@year_mean")
+    ]
+
     plot = figure(title=(type + " Grades By Year"), y_range=grades,
                   sizing_mode='stretch_both', tools=TOOLS)
     plot.scatter('years', 'grades', size=14, alpha=0.2,
                  source=ColumnDataSource(data=data))
+    # Don't draw mean/mode if only 1 year of data
+    if len(year_mode_year) > 1:
+        re = plot.line("year_mode_year", "year_mode", line_width=2,
+                       line_color="red", legend_label="Most Ticked",
+                       source=ColumnDataSource(data=mean_mode))
+        plot.line("year_mean_year", "year_mean", line_width=2,
+                  line_color="orange", legend_label="Average Grade",
+                  source=ColumnDataSource(data=mean_mode))
+        plot.add_tools(HoverTool(tooltips=TOOLTIPS, mode='vline',
+                                 renderers=[re]))
+        plot.legend.location = "top_left"
+        plot.legend.margin = 0
+        plot.legend.label_text_font_size = "8pt"
+        plot.legend.label_text_baseline = "bottom"
+        plot.legend.glyph_height = 6
+        plot.legend.glyph_width = 6
+        plot.legend.click_policy = "hide"
+        plot.legend.label_height = 4
     plot.toolbar.active_drag = None
     script, div = components(plot)
 
