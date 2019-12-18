@@ -75,7 +75,10 @@ def data():
 
         grade_scatters = list()
         for type in get_types(cursor, userid['id']):
-            grade_scatters.append(grade_scatter(cursor, userid['id'], type))
+            reply = grade_scatter(cursor, userid['id'], type)
+            # Check for empty returns
+            if reply:
+                grade_scatters.append(reply)
 
         # Close the connection to the database
         db_close(cursor, connection)

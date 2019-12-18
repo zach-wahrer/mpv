@@ -163,7 +163,6 @@ def grade_scatter(cursor, userid, type):
             JOIN `mpv`.`code` ON `mpv`.`code`.`id` = `%s`.`code`
             WHERE YEAR(`date`) = '%s' AND `type`.`type` = '%s'
             ORDER BY `code`.`id` ASC;"""
-
     for year in years:
         cursor.execute(select % (userid, userid, userid, year, type))
         for row in cursor.fetchall():
@@ -172,6 +171,10 @@ def grade_scatter(cursor, userid, type):
 
     data = {"years": year_data,
             "grades": grade_data}
+
+    # Check for MP no code bug, return nothing if so
+    if not grade_data:
+        return False
 
     # Generate graph
     plot = figure(title=(type + " Grades By Year"), y_range=grades,
