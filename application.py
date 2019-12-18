@@ -16,6 +16,9 @@ app = Flask(__name__)
 # Make sure MP API Key is set
 if not os.environ.get("MPV_MP_KEY"):
     raise RuntimeError("MPV_MP_KEY not set")
+# Make sure MP test acount email is set
+if not os.environ.get("MPV_TEST_ACCT"):
+    raise RuntimeError("MPV_TEST_ACCT email not set")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -29,8 +32,15 @@ def data():
     """Do data magic."""
     if request.method == "POST":
 
-        email = request.form.get("email")
-        units = request.form.get("units")
+        # Check for test link click
+        if request.form.get("test") == "yes":
+            email = os.environ.get("MPV_TEST_ACCT")
+            units = "feet"
+        # Otherwise, import values normally
+        else:
+            email = request.form.get("email")
+            units = request.form.get("units")
+
         # Input validation - Thanks to emailregex.com for the regex
         regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
         if not re.match(regex, email):

@@ -47,6 +47,23 @@
         <div class="text-center p-3" style="font-size: small;">
             <div class="row">
                 <div class="col">
+                    <a href="#" onclick="toggle('dont');" id="dontlink">Don't Have A MP Account?</a>
+                </div>
+            </div>
+            <div class="row p-3" id="dont" style="display: none;">
+                If you would like to see the visualizer in action, but don't have a Mountain Project account,
+                you can take it for a test run.
+                <div class="p-2">
+                    <form action="/data" name="testrun" method="post">
+                        <input type="hidden" name="test" value="yes">
+                        <input type="submit" id="lbutton" value="Try it!" class="btn btn-danger btn-sm" onclick="loading();">
+                    </form>
+                    <div id="loadingframe"></div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col">
                     <a href="#" onclick="toggle('how');" id="howlink">How It Works</a>
                 </div>
             </div>

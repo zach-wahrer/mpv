@@ -32,7 +32,9 @@ MPV is currently in the early stages of development. If you'd like to help out, 
 
 5. Next, configure the `MPV_MP_KEY` environment variable as a Mountain Project API key. You can get one [here](https://www.mountainproject.com/data).
 
-6. Now, run `application.py` with Flask and you should be set!
+6. Configure the `MPV_TEST_ACCT` environment variable to a valid Mountain Project account email. This way, your users can test the app out (via the link on the index page) without an account of their own.
+
+7. Now, run `application.py` with Flask and you should be set!
 
 ### Development Mode
 To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` environment variable to `on`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.

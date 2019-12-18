@@ -24,6 +24,12 @@ function checkEmail() {
     }
 }
 
+function loading() {
+    document.getElementById("lbutton").style.display = "none";
+    document.getElementById("loadingframe").innerHTML = "<img src='static/blocks.gif' />";
+    return true;
+}
+
 function toggle(which) {
     var block = document.getElementById(which);
     var link = document.getElementById(which+'link');
