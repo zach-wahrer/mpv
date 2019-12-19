@@ -6,23 +6,20 @@ While Mountain Project has a similar feature available on each user's profile pa
 
 ## Getting Started
 ---
-MPV is currently in the early stages of development. If you'd like to help out, feel free to jump in. :-)
+MPV is currently in development. If you'd like to help out, feel free to jump in. :-)
 
 ### Prerequisites
 **Current requirements:**
 * Python3
 * Python3 Modules
   - Flask
-  - OS
   - Requests
-  - Re
-  - CSV
   - [MySQL Connector](https://www.mysql.com/products/connector/)
   - Bokeh (v1.4.0)
 * MySQL
 
 ### Installing
-1. On your MySQL server, create a table called `mpv`. Make sure `Collation` is set to `utf8_unicode_ci`. Create a user and give them access to it.
+1. On your MySQL server, create a table called `mpv`. Create a user and give them access to it.
 
 2. Open `helpers.py` and change the `MYSQL_USER`, `MYSQL_ADDRESS` variables to your new username and server address. Do the same for `setup/db_setup.py`.
 
