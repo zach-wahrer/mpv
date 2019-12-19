@@ -1,6 +1,6 @@
 """Helper functions for the MPV web app."""
 
-import os
+import json
 import csv
 import requests
 import mysql.connector
@@ -11,10 +11,13 @@ MYSQL_USER = "mpv"
 MYSQL_ADDRESS = "localhost"
 MYSQL_DATABASE = "mpv"
 
+with open('/etc/config.json') as config_file:
+    config = json.load(config_file)
+
 # Get the MySQL password
-if not os.environ.get("MPV_MYSQL_PASSWD"):
+if not config["MPV_MYSQL_PASSWD"]:
     raise RuntimeError("MPV_MYSQL_PASSWD not set")
-MYSQL_PASSWD = os.environ.get("MPV_MYSQL_PASSWD")
+MYSQL_PASSWD = config["MPV_MYSQL_PASSWD"]
 
 
 def db_connect():
@@ -33,9 +36,9 @@ def get_userid(email):
     (https://www.mountainproject.com/data)
     """
     # Check for dev mode
-    if os.environ.get("MPV_DEV") != "on":
+    if config["MPV_DEV"] != "on":
         # Get API Key
-        API_KEY = os.environ.get("MPV_MP_KEY")
+        API_KEY = config["MPV_MP_KEY"]
 
         # Get info from MountainProject
         try:
@@ -66,7 +69,7 @@ def ticklist(username, id):
     i.e. https://www.mountainproject.com/user/106610639/zach-wahrer/tick-export
     """
     # Check for dev mode
-    if os.environ.get("MPV_DEV") != "on":
+    if config["MPV_DEV"] != "on":
         url = (f"https://www.mountainproject.com/user/" +
                f"{id}/{username}/tick-export")
         # Get the csv file

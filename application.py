@@ -5,19 +5,23 @@ It imports data based on a user ID, then analyzes and displays it.
 Code by Zach Wahrer.
 """
 
-import os
 import re
+import json
 from flask import Flask, render_template, request, redirect
 from helpers import get_userid, ticklist, db_load, db_connect, db_close
 from graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 
+
 app = Flask(__name__)
 
+with open('/etc/config.json') as config_file:
+    config = json.load(config_file)
+
 # Make sure MP API Key is set
-if not os.environ.get("MPV_MP_KEY"):
+if not config["MPV_MP_KEY"]:
     raise RuntimeError("MPV_MP_KEY not set")
 # Make sure MP test acount email is set
-if not os.environ.get("MPV_TEST_ACCT"):
+if not config["MPV_TEST_ACCT"]:
     raise RuntimeError("MPV_TEST_ACCT email not set")
 
 
@@ -34,7 +38,7 @@ def data():
 
         # Check for test link click
         if request.form.get("test") == "yes":
-            email = os.environ.get("MPV_TEST_ACCT")
+            email = config["MPV_TEST_ACCT"]
             units = "feet"
         # Otherwise, import values normally
         else:
@@ -48,7 +52,7 @@ def data():
             return render_template("error.html", data=e)
 
         # Get user and id from MP
-        userid = get_userid(request.form.get("email"))
+        userid = get_userid(email)
         # Check for a successful return from MP
         if userid["status"] == 1:
             e = (f"Connection error. MP Reply: {userid['code']}." +
@@ -67,7 +71,7 @@ def data():
             return render_template("error.html", data=e)
 
         # Check for dev mode
-        if os.environ.get("MPV_DEV") != "on":
+        if config["MPV_DEV"] != "on":
             # Put user's ticklist into the database
             database = db_load(userid['id'], csv['data'])
             # Check for database success
