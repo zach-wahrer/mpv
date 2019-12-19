@@ -1,26 +1,31 @@
 """Check that the database has appropriate tables for MPV, add them if not."""
 
-import os
+import json
 import csv
 import mysql.connector
 from mysql.connector import Error
+from pathlib import Path
 
-# On install, change this line to your MySQL info #
-MYSQL_USER = "mpv"
-MYSQL_ADDRESS = "localhost"
-MYSQL_DATABASE = "mpv"
+# Thanks to aksh1618 on StackOverflow for this snippet
+base_path = Path(__file__).parent
+file_path = (base_path / "../config.json").resolve()
 
-# Get the MySQL password
-if not os.environ.get("MPV_MYSQL_PASSWD"):
-    raise RuntimeError("MPV_MYSQL_PASSWD not set")
-MYSQL_PASSWD = os.environ.get("MPV_MYSQL_PASSWD")
+# Open the config file
+with open(file_path) as config_file:
+    config = json.load(config_file)
+
+# Set database vars
+MYSQL_USER = config["MYSQL_USER"]
+MYSQL_ADDRESS = config["MYSQL_ADDRESS"]
+MYSQL_TABLE = config["MYSQL_TABLE"]
+MYSQL_PASSWD = config["MYSQL_PASSWD"]
 
 
 def main():
     # Connect to database
     try:
         connection = mysql.connector.connect(
-            host=MYSQL_ADDRESS, database=MYSQL_DATABASE,
+            host=MYSQL_ADDRESS, database=MYSQL_TABLE,
             user=MYSQL_USER, password=MYSQL_PASSWD)
 
         # Initialize the cursor
@@ -28,7 +33,7 @@ def main():
         cursor = connection.cursor()
 
         # Search for required tables
-        req_tables = [MYSQL_DATABASE, 'style', 'lead_style', 'type', 'code']
+        req_tables = [MYSQL_TABLE, 'style', 'lead_style', 'type', 'code']
         select = """SELECT table_name FROM information_schema.tables WHERE
                  table_schema = %s AND table_name IN (%s, %s, %s, %s);"""
 
@@ -55,7 +60,7 @@ def main():
         if i not in tables:
 
             # Show user current table operation
-            print("Building: " + MYSQL_DATABASE + "." + i)
+            print("Building: " + MYSQL_TABLE + "." + i)
             # Set everything but code to auto AUTO_INCREMENT
             if i == "code":
                 auto = ""

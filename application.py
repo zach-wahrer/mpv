@@ -14,15 +14,9 @@ from graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 
 app = Flask(__name__)
 
-with open('/etc/config.json') as config_file:
+# Import the config file
+with open('config.json') as config_file:
     config = json.load(config_file)
-
-# Make sure MP API Key is set
-if not config["MPV_MP_KEY"]:
-    raise RuntimeError("MPV_MP_KEY not set")
-# Make sure MP test acount email is set
-if not config["MPV_TEST_ACCT"]:
-    raise RuntimeError("MPV_TEST_ACCT email not set")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -38,7 +32,7 @@ def data():
 
         # Check for test link click
         if request.form.get("test") == "yes":
-            email = config["MPV_TEST_ACCT"]
+            email = config["TEST_ACCT"]
             units = "feet"
         # Otherwise, import values normally
         else:

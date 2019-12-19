@@ -6,24 +6,21 @@ import requests
 import mysql.connector
 from mysql.connector import Error
 
-# On install, change this line to your MySQL info #
-MYSQL_USER = "mpv"
-MYSQL_ADDRESS = "localhost"
-MYSQL_DATABASE = "mpv"
-
-with open('/etc/config.json') as config_file:
+# Open the config file
+with open('config.json') as config_file:
     config = json.load(config_file)
 
-# Get the MySQL password
-if not config["MPV_MYSQL_PASSWD"]:
-    raise RuntimeError("MPV_MYSQL_PASSWD not set")
-MYSQL_PASSWD = config["MPV_MYSQL_PASSWD"]
+# Set database vars
+MYSQL_USER = config["MYSQL_USER"]
+MYSQL_ADDRESS = config["MYSQL_ADDRESS"]
+MYSQL_TABLE = config["MYSQL_TABLE"]
+MYSQL_PASSWD = config["MYSQL_PASSWD"]
 
 
 def db_connect():
     """Create connection to database."""
     connection = mysql.connector.connect(
-        host=MYSQL_ADDRESS, database=MYSQL_DATABASE,
+        host=MYSQL_ADDRESS, database=MYSQL_TABLE,
         user=MYSQL_USER, password=MYSQL_PASSWD)
     connection.autocommit = True
     return connection
@@ -38,7 +35,7 @@ def get_userid(email):
     # Check for dev mode
     if config["MPV_DEV"] != "on":
         # Get API Key
-        API_KEY = config["MPV_MP_KEY"]
+        API_KEY = config["MP_KEY"]
 
         # Get info from MountainProject
         try:
