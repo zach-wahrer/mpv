@@ -188,8 +188,15 @@ def make_sql_insert(cursor, pairs, userid, row):
     else:
         pitches = None
 
+    # Make correction for 0000-00-00 date
+    if row[0] == "0000-00-00":
+        # Set date to the Mountain Project default value for null date
+        date = "1969-12-31"
+    else:
+        date = row[0]
+
     # Set the values tuple
-    values = (userid, row[0], row[1], row[2], s_id,
+    values = (userid, date, row[1], row[2], s_id,
               ls_id, t_id, pitches, row[7])
 
     # Insert the row
