@@ -182,18 +182,18 @@ def make_sql_insert(cursor, pairs, userid, row):
             t_id += ","
         t_id = t_id[:-1]
 
-    # Make correction for blank pitch value
-    if row[6]:
-        pitches = row[6]
-    else:
-        pitches = None
-
     # Make correction for 0000-00-00 date
     if row[0] == "0000-00-00" or row[0] is None:
         # Set date to the Mountain Project default value for null date
         date = "1969-12-31"
     else:
         date = row[0]
+
+    # Make correction for blank pitch value
+    if row[6]:
+        pitches = row[6]
+    else:
+        pitches = None
 
     # Set the values tuple
     values = (userid, date, row[1], row[2], s_id,
