@@ -258,6 +258,7 @@ def get_years(cursor, userid):
     # Format the get_years
     for i in range(0, len(years)):
         years[i] = years[i][0]
+    years.sort()
     return years
 
 
