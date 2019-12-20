@@ -189,15 +189,15 @@ def make_sql_insert(cursor, pairs, userid, row):
     else:
         date = row[0]
 
-    # Make correction for blank pitch value
+    # Make correction for blank height value
     if row[6]:
-        pitches = row[6]
+        height = row[6]
     else:
-        pitches = None
+        height = None
 
     # Set the values tuple
     values = (userid, date, row[1], row[2], s_id,
-              ls_id, t_id, pitches, row[7])
+              ls_id, t_id, height, row[7])
 
     # Insert the row
     cursor.execute(insert, values)
