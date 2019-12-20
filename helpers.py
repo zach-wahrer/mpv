@@ -118,7 +118,7 @@ def db_load(userid, data):
             `style` TINYINT UNSIGNED NULL,
             `lead_style` TINYINT UNSIGNED NULL,
             `type` VARCHAR(18) CHARACTER SET utf8 NOT NULL,
-            `height` SMALLINT UNSIGNED NULL,
+            `height` MEDIUMINT UNSIGNED NULL,
             `code` MEDIUMINT UNSIGNED NOT NULL,
             PRIMARY KEY(`id`))"""
         cursor.execute(create, (userid,))
