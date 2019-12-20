@@ -189,15 +189,33 @@ def make_sql_insert(cursor, pairs, userid, row):
     else:
         date = row[0]
 
+    # Make correction for blank route name
+    if row[1] is None:
+        name = "None"
+    else:
+        name = row[1]
+
+    # Make correction for blank pitch value
+    if row[2] is None:
+        pitches = 1
+    else:
+        pitches = row[2]
+
     # Make correction for blank height value
     if row[6]:
         height = row[6]
     else:
         height = None
 
+    # Make correction for blank code value
+    if row[7]:
+        code = row[7]
+    else:
+        code = 0
+
     # Set the values tuple
-    values = (userid, date, row[1], row[2], s_id,
-              ls_id, t_id, height, row[7])
+    values = (userid, date, name, pitches, s_id,
+              ls_id, t_id, height, code)
 
     # Insert the row
     cursor.execute(insert, values)
