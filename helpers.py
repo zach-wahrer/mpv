@@ -189,7 +189,7 @@ def make_sql_insert(cursor, pairs, userid, row):
         pitches = None
 
     # Make correction for 0000-00-00 date
-    if row[0] == "0000-00-00":
+    if row[0] == "0000-00-00" or row[0] is None:
         # Set date to the Mountain Project default value for null date
         date = "1969-12-31"
     else:
