@@ -171,35 +171,41 @@ def make_sql_insert(cursor, pairs, userid, row):
     ls_id = pairs["lead_style"].get(row[4])
 
     # Special processing for csv values in type
-    t_id = pairs["type"].get(row[5])
-    if t_id is None:
-        t_id = ""
-        # Thanks Sean Vieira for this list comprehension (via StackOverflow)
-        split = [x.strip() for x in row[5].split(',')]
-        # Build the id field as a csv
-        for i in split:
-            t_id += str(pairs["type"].get(i))
-            t_id += ","
-        t_id = t_id[:-1]
+    if row[5]:
+        t_id = pairs["type"].get(row[5])
+        # This runs if there is no match found, ie. var is multi-type
+        if t_id is None:
+            t_id = ""
+            # Thanks Sean Vieira for this list comprehension
+            # (via StackOverflow)
+            split = [x.strip() for x in row[5].split(',')]
+            # Build the id field as a csv
+            for i in split:
+                t_id += str(pairs["type"].get(i))
+                t_id += ","
+            t_id = t_id[:-1]
+    # Assign blank id if type import is blank
+    else:
+        t_id = pairs["type"].get("Blank")
 
     # Make correction for 0000-00-00 date
-    if row[0] == "0000-00-00" or row[0] is None:
+    if row[0] == "0000-00-00" or not row[0]:
         # Set date to the Mountain Project default value for null date
         date = "1969-12-31"
     else:
         date = row[0]
 
     # Make correction for blank route name
-    if row[1] is None:
-        name = "None"
-    else:
+    if row[1]:
         name = row[1]
+    else:
+        name = "None"
 
     # Make correction for blank pitch value
-    if row[2] is None:
-        pitches = 1
-    else:
+    if row[2]:
         pitches = row[2]
+    else:
+        pitches = 1
 
     # Make correction for blank height value
     if row[6]:

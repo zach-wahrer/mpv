@@ -91,7 +91,7 @@ def main():
                 insert += "(`lead_style`) VALUES"
             elif i == "type":
                 values = ["Sport", "Trad", "Boulder", "TR", "Aid",
-                          "Alpine", "Ice", "Mixed", "Snow"]
+                          "Alpine", "Ice", "Mixed", "Snow", "Blank"]
                 insert += "(`type`) VALUES"
             elif i == "code":
                 try:
