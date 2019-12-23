@@ -22,7 +22,7 @@ Thank you for your interest in contributing to MPV! The following is a set of gu
 - When submitting a new issue include detailed description of the flawed behavior of the application and include
  explicit steps on how to reproduce the bug, including screenshots, stacktrace, and error logs.
  
- ## Other contributor notes
+ ## Coding conventions and style guidelines
  
  - Please include unit tests to back up your code
  - We follow PEP 8 style guidelines for all python code
