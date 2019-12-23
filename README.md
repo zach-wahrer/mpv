@@ -4,6 +4,8 @@ MPV is a data visualizer for the rock climbing website [MountainProject.com](htt
 
 While Mountain Project has similar features available on each user's profile page, the aim for this app is to provide a more robust and analytical set of functions.
 
+Currently, you can try the software at: [mpv.zachw.io](https://mpv.zachw.io). Check it out!
+
 ## Getting Started
 ---
 MPV is currently in development. If you'd like to help out, feel free to jump in. :-)
