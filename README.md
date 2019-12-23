@@ -38,6 +38,10 @@ Note: Make sure you run the program normally at least once to build a suitable u
 ---
 **Zach Wahrer** - [zachtheclimber](https://github.com/zachtheclimber)
 
+## Collaborator
+---
+**BenfromEarth** - [benjpalmer](https://github.com/benjpalmer)
+
 ## License
 ---
 MPV is licensed under the GNU General Public License. Check out the [LICENSE](LICENSE) for more details.
