@@ -8,17 +8,11 @@ While Mountain Project has similar features available on each user's profile pag
 ---
 MPV is currently in development. If you'd like to help out, feel free to jump in. :-)
 
-### Prerequisites
-**Current requirements:**
-* Python3
-* Python3 Modules
-  - Flask
-  - Requests
-  - [MySQL Connector](https://www.mysql.com/products/connector/)
-  - Bokeh (v1.4.0)
-* MySQL
 
 ### Installing
+1. Make sure you have Python 3.6 installed on your machine, then run the following
+shell command: `pip install -r requirements.txt`
+
 1. On your MySQL server, create a table called `mpv`. Create a user and give them access to it.
 
 2. Rename `config.sample.json` to `config.json`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
