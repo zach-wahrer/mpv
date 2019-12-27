@@ -28,7 +28,7 @@ to setup database from docker.
 ### Database setup with docker
 1. Navigate to the root directory of the MPV project on your machine
 2. run `docker-compose up` 
-3. To connect to the local mysql database instance with `mysql -u root -p mpv_db -h 127.0.0.1 -P 3306`
+3. To connect to the local mysql database instance with `mysql -u root -p mpv -h 127.0.0.1 -P 3306`
 4. Password for development is `password`
 
 Create your `config.json` file to look like:
@@ -37,7 +37,7 @@ Create your `config.json` file to look like:
     "MYSQL_USER": "root",
     "MYSQL_PASSWD": "password",
     "MYSQL_ADDRESS": "127.0.0.1",
-    "MYSQL_TABLE": "mpv_db",
+    "MYSQL_TABLE": "mpv",
     "MP_KEY": "Your_MountainProject_API_Key_Here",
     "TEST_ACCT": "Your_MountainProject_Email_Acount_Here",
     "MPV_DEV": "on"
