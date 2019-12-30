@@ -10,12 +10,12 @@ Thank you for your interest in contributing to MPV! The following is a set of gu
  - [ ] Does this feature have any breaking changes?
  - [ ] Does this change greatly affect the UI/frontend of the application?
 
- **Feel free to reach out to [@zachtheclimber](https://github.com/zachtheclimber) to discuss the feature before you start working on it.**
-
  When opening an issue include the answers to the questions above along with:
 
  - An explanation of why the feature would be useful.
  - A step by step description of the feature.
+
+ **Feel free to reach out to [@zachtheclimber](https://github.com/zachtheclimber) to discuss the feature before you start working on it.**
 
  ## Steps to reporting bugs
 
