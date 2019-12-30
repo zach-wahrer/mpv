@@ -15,13 +15,34 @@ MPV is currently in development. If you'd like to help out, feel free to jump in
 1. Make sure you have Python 3.6 installed on your machine, then run the following
 shell command: `pip install -r requirements.txt`
 
-1. On your MySQL server, create a table called `mpv`. Create a user and give them access to it.
+1. On your MySQL server, create a table called `mpv`. Create a user and give them access to it. Or see next section on how
+to setup database from docker.
 
 2. Rename `config.sample.json` to `config.json`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
 
 3. From the `setup` folder, run `python3 db_setup.py`. This will create and populate the required key tables in the MPV database.
 
-4. Now, run `application.py` with Flask and you should be up and running!
+4. To run the application on osx set the `FLASK_APP` environment variable to `application` by running ` export FLASK_APP=application`
+4. Now, run `application.py` with Flask by using running the shell command `flask run` and you should be up and running!
+
+### Database setup with docker
+1. Navigate to the root directory of the MPV project on your machine
+2. run `docker-compose up` 
+3. To connect to the local mysql database instance with `mysql -u root -p mpv -h 127.0.0.1 -P 3306`
+4. Password for development is `password`
+
+Create your `config.json` file to look like:
+```
+{
+    "MYSQL_USER": "root",
+    "MYSQL_PASSWD": "password",
+    "MYSQL_ADDRESS": "127.0.0.1",
+    "MYSQL_TABLE": "mpv",
+    "MP_KEY": "Your_MountainProject_API_Key_Here",
+    "TEST_ACCT": "Your_MountainProject_Email_Acount_Here",
+    "MPV_DEV": "on"
+}
+```
 
 ### Development Mode
 To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` variable in `config.json` to `on`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.
