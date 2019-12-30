@@ -4,27 +4,28 @@ Thank you for your interest in contributing to MPV! The following is a set of gu
 
  ## Suggesting enhancements
 
- Before you suggest a new feature make sure there is not an existing issue and take the time to ask yourself:
+ Before you suggest a new feature, make sure there is not an existing issue. Also, take the time to ask yourself:
 
  - [ ] Does this feature need to be added and align with the overall ethos of MPV?
  - [ ] Does this feature have any breaking changes?
- - [ ] Does this change affect the UI/frontend of the application?
+ - [ ] Does this change greatly affect the UI/frontend of the application?
 
  When opening an issue include the answers to the questions above along with:
 
  - An explanation of why the feature would be useful.
- - A step by step description of the feature
+ - A step by step description of the feature.
 
  ## Steps to reporting bugs
 
-- Ensure the bug was not already reported
+- Ensure the bug was not already reported.
 - If you are unable to find an issue that has already addressed the bug, please open a new issue.
-- When submitting a new issue include detailed description of the flawed behavior of the application and include
- explicit steps on how to reproduce the bug, including screenshots, stacktrace, and error logs.
+- When submitting a new issue, include a detailed description of the flawed behavior of the application as well as explicit steps on how to reproduce the bug. Include screenshots, stacktrace, and error logs. The more details, the easier it will be for us to find the bug.
 
  ## Coding conventions and style guidelines
 
  - Please include unit tests to back up your code.
  - We follow PEP 8 style guidelines for all Python code.
- - Readability is important.
+ - Readability is important. Please favor comprehensible code over one-liners and other hard to read implementations.
  - Comment your code where necessary so others can understand it.
+ - Please use type hinting and function annotations where appropriate.
+ - If possible, stick to currently used modules for added features.
