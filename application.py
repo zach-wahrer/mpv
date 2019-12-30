@@ -6,7 +6,6 @@ Code by Zach Wahrer.
 """
 
 import re
-import json
 from flask import Flask, render_template, request, redirect
 from helpers import get_userid, ticklist, db_load, db_connect, db_close
 from graphing import height_climbed, pitches_climbed, grade_scatter, get_types
@@ -14,9 +13,8 @@ from graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 
 app = Flask(__name__)
 
-# Import the config file
-with open('config.json') as config_file:
-    config = json.load(config_file)
+# Get config values from file
+app.config.from_object('config')
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -32,7 +30,7 @@ def data():
 
         # Check for test link click
         if request.form.get("test") == "yes":
-            email = config["TEST_ACCT"]
+            email = app.config["TEST_ACCT"]
             units = "feet"
         # Otherwise, import values normally
         else:
@@ -65,7 +63,7 @@ def data():
             return render_template("error.html", data=e)
 
         # Check for dev mode
-        if config["MPV_DEV"] != "on":
+        if app.config["MPV_DEV"] is not True:
             # Put user's ticklist into the database
             database = db_load(userid['id'], csv['data'])
             # Check for database success

@@ -18,7 +18,7 @@ shell command: `pip install -r requirements.txt`
 1. On your MySQL server, create a table called `mpv`. Create a user and give them access to it. Or see next section on how
 to setup database from docker.
 
-2. Rename `config.sample.json` to `config.json`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
+2. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
 
 3. From the `setup` folder, run `python3 db_setup.py`. This will create and populate the required key tables in the MPV database.
 
@@ -46,7 +46,7 @@ Create your `config.json` file to look like:
 ```
 
 ### Development Mode
-To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` variable in `config.json` to `on`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.
+To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` variable in `config.py` to `True`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.
 
 Note: Make sure you run the program normally at least once to build a suitable user database before enabling dev mode. You will have to rename that database `1111` in order for the program to function.  
 

@@ -1,24 +1,20 @@
 """Helper functions for the MPV web app."""
 
-import json
 import csv
 import requests
 import mysql.connector
 from mysql.connector import Error
-
-# Open the config file
-with open('config.json') as config_file:
-    config = json.load(config_file)
-
-# Set database vars
-MYSQL_USER = config["MYSQL_USER"]
-MYSQL_ADDRESS = config["MYSQL_ADDRESS"]
-MYSQL_TABLE = config["MYSQL_TABLE"]
-MYSQL_PASSWD = config["MYSQL_PASSWD"]
+from flask import current_app as app
 
 
 def db_connect():
     """Create connection to database."""
+    # Set config values
+    with app.app_context():
+        MYSQL_USER = app.config["MYSQL_USER"]
+        MYSQL_ADDRESS = app.config["MYSQL_ADDRESS"]
+        MYSQL_TABLE = app.config["MYSQL_TABLE"]
+        MYSQL_PASSWD = app.config["MYSQL_PASSWD"]
     connection = mysql.connector.connect(
         host=MYSQL_ADDRESS, database=MYSQL_TABLE,
         user=MYSQL_USER, password=MYSQL_PASSWD)
@@ -32,10 +28,13 @@ def get_userid(email):
 
     (https://www.mountainproject.com/data)
     """
+    # Set config values
+    with app.app_context():
+        MPV_DEV = app.config["MPV_DEV"]
+        API_KEY = app.config["MP_KEY"]
+
     # Check for dev mode
-    if config["MPV_DEV"] != "on":
-        # Get API Key
-        API_KEY = config["MP_KEY"]
+    if MPV_DEV is not True:
 
         # Get info from MountainProject
         try:
@@ -65,8 +64,11 @@ def ticklist(username, id):
 
     i.e. https://www.mountainproject.com/user/106610639/zach-wahrer/tick-export
     """
+    # Set config value
+    with app.app_context():
+        MPV_DEV = app.config["MPV_DEV"]
     # Check for dev mode
-    if config["MPV_DEV"] != "on":
+    if MPV_DEV is not True:
         url = (f"https://www.mountainproject.com/user/" +
                f"{id}/{username}/tick-export")
         # Get the csv file
