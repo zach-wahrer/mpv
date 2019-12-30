@@ -10,6 +10,8 @@ Thank you for your interest in contributing to MPV! The following is a set of gu
  - [ ] Does this feature have any breaking changes?
  - [ ] Does this change greatly affect the UI/frontend of the application?
 
+ **Feel free to reach out to @zachtheclimber to discuss the feature before you start working on it.**
+
  When opening an issue include the answers to the questions above along with:
 
  - An explanation of why the feature would be useful.
@@ -19,7 +21,7 @@ Thank you for your interest in contributing to MPV! The following is a set of gu
 
 - Ensure the bug was not already reported.
 - If you are unable to find an issue that has already addressed the bug, please open a new issue.
-- When submitting a new issue, include a detailed description of the flawed behavior of the application as well as explicit steps on how to reproduce the bug. Include screenshots, stacktrace, and error logs. The more details, the easier it will be for us to find the bug.
+- When submitting a new issue, include a detailed description of the flawed behavior of the application as well as explicit steps on how to reproduce the bug. Include screenshots, stacktrace, and error logs. The more details, the easier it will be for us to find the bug. If you have an idea of what went wrong and how to fix it, please include that as well.
 
  ## Coding conventions and style guidelines
 
