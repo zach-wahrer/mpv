@@ -20,7 +20,7 @@ to setup database from docker.
 
 2. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
 
-3. From the `setup` folder, run `python3 db_setup.py`. This will create and populate the required key tables in the MPV database.
+3. From your root project directory, run `python -m app.setup.db_setup`. This will create and populate the required key tables in the MPV database.
 
 4. To run the application on osx or Linux, set the `FLASK_APP` environment variable to `application` by running `export FLASK_APP=application`
 
@@ -42,6 +42,12 @@ MP_KEY = "Your_MountainProject_API_Key_Here"
 TEST_ACCT = "Your_MountainProject_Email_Acount_Here"
 MPV_DEV = True
 ```
+
+### Testing
+
+To add tests please add them in under the `app/tests` directory.
+Testing is done via Pytest. For documentation please visit https://docs.pytest.org/en/latest/index.html
+To run tests simply run the following shell command: `pytest`
 
 ### Development Mode
 To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` variable in `config.py` to `True`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.

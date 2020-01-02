@@ -25,7 +25,7 @@ Thank you for your interest in contributing to MPV! The following is a set of gu
 
  ## Coding conventions and style guidelines
 
- - Please include unit tests to back up your code.
+ - Please include unit tests to back up your code and make sure all existing tests are still passing.
  - We follow PEP 8 style guidelines for all Python code.
  - Readability is important. Please favor comprehensible code over one-liners and other hard to read implementations.
  - Comment your code where necessary so others can understand it.

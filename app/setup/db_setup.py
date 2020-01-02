@@ -1,14 +1,20 @@
 """Check that the database has appropriate tables for MPV, add them if not."""
 
 import csv
+import os
 
 import mysql.connector
 from mysql.connector import Error
 
-from ..config import *
+from ..config import MYSQL_ADDRESS, MYSQL_PASSWD, MYSQL_TABLE, MYSQL_USER
+
+
+_GRADE_CODES = 'grade_codes.csv'
 
 
 def main():
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, _GRADE_CODES)
     # Connect to database
     try:
         connection = mysql.connector.connect(
@@ -82,7 +88,7 @@ def main():
                 insert += "(`type`) VALUES"
             elif i == "code":
                 try:
-                    csv_file = open('grade_codes.csv')
+                    csv_file = open(filename)
                 except IOError:
                     print("Cannot open grade_codes.csv. Please make sure" +
                           " the file is available, drop the `code`" +

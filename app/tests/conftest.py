@@ -1,3 +1,9 @@
+"""
+Puts any fixture functions into a separate file so that tests from multiple test modules in the directory
+can access the fixture functions.
+https://docs.pytest.org/en/latest/fixture.html
+"""
+
 import os
 import tempfile
 
@@ -8,7 +14,7 @@ from app import create_app
 
 @pytest.fixture
 def client():
-    """Called from any test that passes client as an argument."""
+    # First lets create an instance of our application.
     app = create_app()
     # Set the database value to an empty tempfile. This can be changed or overridden if testing against the actual
     # database is necessary.
@@ -20,10 +26,3 @@ def client():
 
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
-
-
-def test_index(client):
-    """Assert that a status code of 200 is returned from /"""
-    index = client.get('/')
-    assert index.status == '200 OK'
-
