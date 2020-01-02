@@ -8,10 +8,10 @@ Code by Zach Wahrer.
 import re
 
 from flask import Flask, render_template, request, redirect
-from .config import *
 
-from .helpers import get_userid, ticklist, db_load, db_connect, db_close
+from .config import *
 from .graphing import height_climbed, pitches_climbed, grade_scatter, get_types
+from .helpers import get_userid, ticklist, db_load, db_connect, db_close
 
 
 def create_app(test_config=None):
