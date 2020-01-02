@@ -1,24 +1,11 @@
 """Check that the database has appropriate tables for MPV, add them if not."""
 
-import json
 import csv
+
 import mysql.connector
 from mysql.connector import Error
-from pathlib import Path
 
-# Thanks to aksh1618 on StackOverflow for this snippet
-base_path = Path(__file__).parent
-file_path = (base_path / "../config.json").resolve()
-
-# Open the config file
-with open(file_path) as config_file:
-    config = json.load(config_file)
-
-# Set database vars
-MYSQL_USER = config["MYSQL_USER"]
-MYSQL_ADDRESS = config["MYSQL_ADDRESS"]
-MYSQL_TABLE = config["MYSQL_TABLE"]
-MYSQL_PASSWD = config["MYSQL_PASSWD"]
+from ..config import *
 
 
 def main():

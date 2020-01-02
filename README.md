@@ -32,17 +32,15 @@ to setup database from docker.
 3. To connect to the local mysql database instance with `mysql -u root -p mpv -h 127.0.0.1 -P 3306`
 4. Password for development is `password`
 
-Create your `config.json` file to look like:
+Create your `config.py` file to look like:
 ```
-{
-    "MYSQL_USER": "root",
-    "MYSQL_PASSWD": "password",
-    "MYSQL_ADDRESS": "127.0.0.1",
-    "MYSQL_TABLE": "mpv",
-    "MP_KEY": "Your_MountainProject_API_Key_Here",
-    "TEST_ACCT": "Your_MountainProject_Email_Acount_Here",
-    "MPV_DEV": "on"
-}
+MYSQL_USER = "root"
+MYSQL_PASSWD = "password"
+MYSQL_ADDRESS = "127.0.0.1"
+MYSQL_TABLE = "mpv"
+MP_KEY = "Your_MountainProject_API_Key_Here"
+TEST_ACCT = "Your_MountainProject_Email_Acount_Here"
+MPV_DEV = True
 ```
 
 ### Development Mode
