@@ -2,7 +2,9 @@
 A small webapp that functions on MountainProject.com data.
 
 It imports data based on a user ID, then analyzes and displays it.
-Code by Zach Wahrer.
+
+Code by Zach Wahrer [github.com/zachtheclimber]
+and BenfromEarth [github.com/benjpalmer].
 """
 
 import re
@@ -15,9 +17,10 @@ from .helpers import get_userid, ticklist, db_load, db_connect, db_close
 
 
 def create_app(test_config=None):
+    """Create Flask app to generate web controller."""
     app = Flask(__name__)
-    # Get config values from object. If we are in a testing env,
-    # then lets load the necessary config details.
+
+    # Get config values. If we are in testing env, load the test config.
     if test_config:
         app.config.from_object(test_config)
     else:
@@ -25,19 +28,18 @@ def create_app(test_config=None):
 
     @app.route("/", methods=["GET", "POST"])
     def index():
-        """Show main page."""
+        """Show main user input page."""
         return render_template("index.html")
 
     @app.route("/data", methods=["GET", "POST"])
     def data():
-        """Do data magic."""
+        """Process input data and output graphs."""
         if request.method == "POST":
 
-            # Check for test link click
+            # Check for test link click from input page
             if request.form.get("test") == "yes":
                 email = app.config["TEST_ACCT"]
                 units = "feet"
-            # Otherwise, import values normally
             else:
                 email = request.form.get("email")
                 units = request.form.get("units")
@@ -48,9 +50,8 @@ def create_app(test_config=None):
                 e = "Please enter a valid email."
                 return render_template("error.html", data=e)
 
-            # Get user and id from MP
+            # Get user and id from MountainProject
             userid = get_userid(email)
-            # Check for a successful return from MP
             if userid["status"] == 1:
                 e = (f"Connection error. MP Reply: {userid['code']}." +
                      " Please make sure you supplied a valid API key.")
@@ -59,39 +60,33 @@ def create_app(test_config=None):
                 e = "There is no user for that email. Please try again."
                 return render_template("error.html", data=e)
 
-            # Get ticklist from MP via CSV
+            # Get ticklist from MountainProject via CSV
             csv = ticklist(userid["name"], userid["id"])
-            # Check for successful data return
             if csv["status"] == 1:
                 e = (f"Error retriving ticklist. MP Reply: {csv['code']}." +
                      " Please try again later.")
                 return render_template("error.html", data=e)
 
-            # Check for dev mode
+            # Put user's ticklist into the database
             if not app.config["MPV_DEV"]:
-                # Put user's ticklist into the database
                 database = db_load(userid['id'], csv['data'])
-                # Check for database success
                 if database['status'] == 1:
                     e = f"Database error: {database['error']}"
                     return render_template('error.html', data=e)
 
-            # Connect to database for graph and stats generation
+            # Generate the stats and draw graph
             connection = db_connect()
             cursor = connection.cursor()
 
-            # Generate the stats and draw graph
             height = height_climbed(cursor, userid['id'], units)
             pitches = pitches_climbed(cursor, userid['id'])
 
             grade_scatters = list()
             for type in get_types(cursor, userid['id']):
                 reply = grade_scatter(cursor, userid['id'], type)
-                # Check for empty returns
                 if reply:
                     grade_scatters.append(reply)
 
-            # Close the connection to the database
             db_close(cursor, connection)
 
             # Show final output
@@ -107,4 +102,5 @@ def create_app(test_config=None):
         # Send them back to the index if they try to GET
         else:
             return redirect("/")
+
     return app
