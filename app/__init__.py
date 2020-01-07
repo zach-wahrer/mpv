@@ -16,7 +16,8 @@ from .helpers import get_userid, ticklist, db_load, db_connect, db_close
 
 def create_app(test_config=None):
     app = Flask(__name__)
-    # Get config values from object. If we are in a testing env, then lets load the necessary config details.
+    # Get config values from object. If we are in a testing env,
+    # then lets load the necessary config details.
     if test_config:
         app.config.from_object(test_config)
     else:
@@ -55,7 +56,7 @@ def create_app(test_config=None):
                      " Please make sure you supplied a valid API key.")
                 return render_template("error.html", data=e)
             elif userid["status"] == 2:
-                e = "There is no user connected to that email. Please try again."
+                e = "There is no user for that email. Please try again."
                 return render_template("error.html", data=e)
 
             # Get ticklist from MP via CSV
