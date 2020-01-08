@@ -77,7 +77,7 @@ def create_app(test_config=None):
                     return render_template('error.html', data=e)
 
             # Connect to database for graph and stats generation
-            connection = db_connect()
+            connection = db_connect(config=app.config)
             cursor = connection.cursor()
 
             # Generate the stats and draw graph

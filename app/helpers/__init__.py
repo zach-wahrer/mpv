@@ -2,24 +2,11 @@
 
 import csv
 import requests
-import mysql.connector
-from mysql.connector import Error
+
 from flask import current_app as app
+from mysql.connector import Error
 
-
-def db_connect():
-    """Create connection to database."""
-    # Set config values
-    with app.app_context():
-        MYSQL_USER = app.config["MYSQL_USER"]
-        MYSQL_ADDRESS = app.config["MYSQL_ADDRESS"]
-        MYSQL_TABLE = app.config["MYSQL_TABLE"]
-        MYSQL_PASSWD = app.config["MYSQL_PASSWD"]
-    connection = mysql.connector.connect(
-        host=MYSQL_ADDRESS, database=MYSQL_TABLE,
-        user=MYSQL_USER, password=MYSQL_PASSWD)
-    connection.autocommit = True
-    return connection
+from .database_connection import db_close, db_connect
 
 
 def get_userid(email):
@@ -227,9 +214,3 @@ def make_sql_insert(cursor, pairs, userid, row):
 
     # Insert the row
     cursor.execute(insert, values)
-
-
-def db_close(cursor, connection):
-    """Close down the database connection."""
-    cursor.close()
-    connection.close()
