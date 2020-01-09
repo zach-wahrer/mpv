@@ -1,10 +1,12 @@
 import csv
-from typing import Dict
+from typing import Dict, Union
 
-from requests import ConnectionError, ConnectTimeout, get, HTTPError, ReadTimeout, Timeout
+import requests
+from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
 
 
 class MountainProjectParser:
+    """Responsible for the processing and temporary storage of Mountain Project API data. """
     api_data = {}
 
     def __init__(self):
@@ -12,6 +14,7 @@ class MountainProjectParser:
         self._mp_username = None
 
     def parse_user_data(self) -> Dict:
+        """Parse the request into JSON data and return username and mountain project ID."""
         try:
             # In case the JSON decoding fails, r.json() raises a ValueError
             user_data = self.api_data.get('user_data').json()
@@ -21,7 +24,8 @@ class MountainProjectParser:
         except ValueError:
             return {"status": 2}
 
-    def parse_tick_list(self):
+    def parse_tick_list(self) -> Dict:
+        """Parse the request data into a CSV and clean."""
         try:
             tick_list = self.api_data.get("tick_list").content.decode("utf-8")
             ticklist = list(csv.reader(tick_list.splitlines(), delimiter=','))
@@ -45,21 +49,29 @@ class MountainProjectHandler(MountainProjectParser):
         self._email = email
         self.base_url = "https://www.mountainproject.com"
 
-    def _mp_generic_request(self, obj_key: str,  url: str, params: dict = None, timeout: int = 30):
+    def _mp_generic_request(self, obj_key: str,  url: str, params: Dict = None, timeout: int = 30):
         try:
-            r = get(url, params, timeout=timeout)
+            r = requests.get(url, params, timeout=timeout)
             r.raise_for_status()
             # add response to super class dictionary for processing.
             self.api_data.update({obj_key: r})
             return r
         except (ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError):
+            # TODO We should think about error handling a little bit more
             return {"status": 1, "code": r.status_code}
 
-    def fetch_user(self):
-        # build the query parameters
+    def fetch_user(self) -> Union[requests, Dict]:
+        """Executes request to /data/get-user endpoint."""
         params = {"key": self._api_key, "email": self._email}
-        # return the data
-        return self._mp_generic_request(url=f"{self.base_url}/data/get-user", params=params, obj_key='user_data')
+        return self._mp_generic_request(
+            url=f"{self.base_url}/data/get-user",
+            params=params,
+            obj_key='user_data'
+        )
 
-    def lookup_ticklist(self):
-        return self._mp_generic_request(url=f"{self.base_url}/user/{self._mp_id}/{self._mp_username}/tick-export", obj_key='tick_list')
+    def fetch_tick_list(self) -> Union[requests, Dict]:
+        """Executes request to /user/<mp_id>/<mp_username>/tick-export."""
+        return self._mp_generic_request(
+            url=f"{self.base_url}/user/{self._mp_id}/{self._mp_username}/tick-export",
+            obj_key='tick_list'
+        )

@@ -30,5 +30,5 @@ def test_mp_request(app: fixture) -> None:
     print(api.parse_user_data())
     assert 1 == 1
 
-    api.lookup_ticklist()
+    api.fetch_tick_list()
     print(api.parse_tick_list())
