@@ -86,11 +86,11 @@ def ticklist(username, id):
     return {"status": 0, "data": ticklist}
 
 
-def db_load(userid, data):
+def db_load(userid, data, config=None):
     """Load CSV file into MySQL database."""
     # Connect to database
     try:
-        connection = db_connect()
+        connection = db_connect(config=config)
         cursor = connection.cursor()
 
         # Drop current user table if it exists
