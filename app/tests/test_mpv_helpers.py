@@ -2,7 +2,7 @@ from mysql.connector import CMySQLConnection, Error, MySQLConnection
 from pytest import fixture, raises
 
 from ..helpers.database_connection import db_connect, db_close
-from ..helpers.mountain_project import MountainProjectApi
+from ..helpers.mountain_project import MountainProjectHandler
 
 
 def test_connect(app: fixture) -> None:
@@ -24,15 +24,11 @@ def test_failed_db_connection() -> None:
         db_connect(config={})
 
 
-"""def test_mp_request(app: fixture) -> None:
-    mp = MountainProjectApi()
-    email = mp.lookup_user(email=app.config.get("TEST_ACCT"), api_key=app.config.get("MP_KEY"))
-    print(email)
+def test_mp_request(app: fixture) -> None:
+    api = MountainProjectHandler(email='benjpalmer@yahoo.com', api_key=app.config.get("MP_KEY"))
+    api.fetch_user()
+    print(api.parse_user_data())
     assert 1 == 1
 
-def test_ticklist(app):
-    mp = MountainProjectApi()
-    ticks = mp.lookup_ticklist(username='Ostrich Society', mp_id='107324100')
-    print(ticks.content.decode('utf-8'))
-    assert 1 == 1
-"""
+    api.lookup_ticklist()
+    print(api.parse_tick_list())
