@@ -29,18 +29,16 @@ def test_failed_db_connection() -> None:
 
 
 class MockResponse:
+    """Handles mocking requests, and feeds mock data to tests requiring external API data."""
     def __call__(self):
         return requests.models.Response
-    # mock json() method always returns a specific testing dictionary
 
     @staticmethod
     def json():
-        # Instead of actually decoding the Response object, return our test data.
         return test_user_data
 
     @property
     def content(self):
-        # Maybe return test csv data encoded?
         return test_ticks_response
 
 
@@ -55,6 +53,7 @@ def test_prod_env_mp_handler(monkeypatch):
         return MockResponse().json()
 
     def mock_content(*args, **kwargs):
+        # When Response.content is called return our MockResponse content property.
         return MockResponse().content
 
     # apply the monkeypatch's
