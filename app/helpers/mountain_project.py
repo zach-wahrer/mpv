@@ -69,7 +69,6 @@ class MountainProjectHandler(MountainProjectParser):
         try:
             mp_request = requests.get(url, params, timeout=timeout)
         except (ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError):
-            # TODO We should think about error handling a little bit more
             return {"status": 1, "code": mp_request.status_code}
 
         self.api_data.update({obj_key: mp_request})  # add response to super class dictionary for processing.
