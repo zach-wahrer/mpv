@@ -4,7 +4,7 @@ import pytest
 import requests
 from mysql.connector import CMySQLConnection, Error, MySQLConnection
 
-from .test_data.mp_api_response import test_user_data
+from .test_data.mp_api_response import test_expected_data, test_ticks_response, test_user_data
 from ..helpers.database_connection import db_connect, db_close
 from ..helpers.mountain_project import MountainProjectHandler
 
@@ -38,6 +38,11 @@ class MockResponse:
         # Instead of actually decoding the Response object, return our test data.
         return test_user_data
 
+    @property
+    def content(self):
+        # Maybe return test csv data encoded?
+        return test_ticks_response
+
 
 def test_prod_env_mp_handler(monkeypatch):
     """Any arguments may be passed and mocked functions will always return our mocked objects."""
@@ -49,9 +54,13 @@ def test_prod_env_mp_handler(monkeypatch):
         # When Response.json() is called, return our test data instead of actually calling that method.
         return MockResponse().json()
 
+    def mock_content(*args, **kwargs):
+        return MockResponse().content
+
     # apply the monkeypatch's
     monkeypatch.setattr(requests, "get", mock_get)
     monkeypatch.setattr(requests.models.Response, "json", mock_json)
+    monkeypatch.setattr(requests.models.Response, "content", mock_content)
 
     # Create MountainProjectHandler instance which will use monkeypatch and test data.
     api = MountainProjectHandler(email="test_email@example.com", api_key='test_key', dev_env=False)
@@ -59,9 +68,17 @@ def test_prod_env_mp_handler(monkeypatch):
     data = api.parse_user_data()
 
     # Make assertions of returned data from MountainProjectParser.
-    assert data['mp_id'] == 105324100
+    assert data["mp_id"] == 105324100
     assert data["name"] == "Test User"
     assert data["status"] == 0
+
+    # Fetch the mock mock tick list
+    api.fetch_tick_list()
+    data = api.parse_tick_list()
+
+    # Assert data output is what we expect
+    assert data["status"] == 0
+    assert data["data"] == test_expected_data
 
 
 def test_dev_env_mp_handler():

@@ -40,7 +40,7 @@ class MountainProjectParser:
             else:
                 tick_list = self.api_data.get("tick_list").content.decode("utf-8")
                 ticklist = list(csv.reader(tick_list.splitlines(), delimiter=','))
-            # Delete in reverse order to make field posistions simpler
+            # Delete in reverse order to make field positions simpler
             remove = [12, 8, 7, 6, 4, 3, 2]
             for row in ticklist:
                 for i in remove:

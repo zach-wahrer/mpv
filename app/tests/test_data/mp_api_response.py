@@ -28,3 +28,6 @@ test_user_data = {
     'admin': '',
     'success': 1
 }
+
+test_ticks_response = b'Date,Route,Rating,Notes,URL,Pitches,Location,"Avg Stars","Your Stars",Style,"Lead Style","Route Type","Your Rating",Length,"Rating Code"\n2018-06-01,Sprayathon,5.13c,,https://www.mountainproject.com/route/105753589/sprayathon,1,"Colorado > Rifle > Rifle Mountain Park > The Arsenal",3.9,-1,Lead,Redpoint,Sport,,,9200\n'
+test_expected_data = [['2018-06-01', 'Sprayathon', '1', 'Lead', 'Redpoint', 'Sport', '', '9200']]
