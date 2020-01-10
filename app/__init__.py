@@ -11,7 +11,7 @@ from flask import Flask, render_template, request, redirect
 
 from .config import *
 from .graphing import height_climbed, pitches_climbed, grade_scatter, get_types
-from .helpers import get_userid, ticklist, db_load, db_connect, db_close
+from .helpers.database_connection import db_close, db_connect, db_load
 from .helpers.mountain_project import MountainProjectHandler
 
 
@@ -44,7 +44,6 @@ def create_app(test_config=None):
                 units = request.form.get("units")
 
             # Input validation - Thanks to emailregex.com for the regex
-            # This should likely get moved into it's own helper function. And have tests.
             regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
             if not re.match(regex, email):
                 e = "Please enter a valid email."
