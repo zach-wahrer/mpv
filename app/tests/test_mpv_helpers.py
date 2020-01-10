@@ -46,14 +46,15 @@ class TestMountainProjectHandler:
         cls.api_dev = MountainProjectHandler(email="test@example.com", api_key="", dev_env=True)
         cls.api_prod = MountainProjectHandler(email="test_email@example.com", api_key='test_key', dev_env=False)
 
-        # Apply monkeypatch
         cls.monkeypatch = MonkeyPatch()
-        cls.monkeypatch.setattr(requests, "get", cls.mock_get)
+        cls.monkeypatch.setattr(requests, "get", cls.mock_get)  # Apply monkeypatch to requests.get()
 
-    # When requests.get() is called return our MockResponse object. This includes access to all MockResponse methods.
     @staticmethod
     def mock_get(*args, **kwargs) -> MockResponse:
-        # Returns an empty requests.Response object
+        """
+        When requests.get() is called, return our MockResponse object.
+        This includes access to all MockResponse methods and properties.
+        """
         return MockResponse()
 
     def test_mp_api_user_data(self) -> None:
@@ -71,7 +72,6 @@ class TestMountainProjectHandler:
         self.api_prod.fetch_tick_list()
         data = self.api_prod.parse_tick_list()
 
-        # Assert data output is what we expect
         assert data["status"] == 0
         assert data["data"] == test_expected_data
 

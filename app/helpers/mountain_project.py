@@ -19,37 +19,41 @@ class MountainProjectParser:
 
     def parse_user_data(self, dev_env: bool = False) -> Dict:
         """Parse the request into JSON data and return username and mountain project ID."""
-        try:
-            if dev_env:
-                return _DEV_USER_DATA
-            else:
+        if dev_env:
+            return _DEV_USER_DATA
+        else:
+            try:
                 user_data = self.api_data.get('user_data').json()
-                self._mp_id = user_data.get("id")
-                self._mp_username = user_data.get("name")
-                return {"status": 0, "name": self._mp_username, "mp_id": self._mp_id}
-        except ValueError:
-            # In case the JSON decoding fails, r.json() raises a ValueError
-            return {"status": 2}
+            except ValueError:
+                # In case the JSON decoding fails, r.json() raises a ValueError.
+                return {"status": 2}
+
+            self._mp_id = user_data.get("id")
+            self._mp_username = user_data.get("name")
+            return {"status": 0, "name": self._mp_username, "mp_id": self._mp_id}
 
     def parse_tick_list(self, dev_env: bool = False) -> Dict:
         """Parse the request data into a CSV and clean."""
-        try:
-            if dev_env:
-                with open(_DEV_TEST_TICKS) as ticklist:
-                    ticklist = list(csv.reader(ticklist, delimiter=','))
-            else:
+        if dev_env:
+            with open(_DEV_TEST_TICKS) as ticklist:
+                ticklist = list(csv.reader(ticklist, delimiter=','))
+        else:
+            try:
                 tick_list = self.api_data.get("tick_list").content.decode("utf-8")
                 ticklist = list(csv.reader(tick_list.splitlines(), delimiter=','))
-            # Delete in reverse order to make field positions simpler
-            remove = [12, 8, 7, 6, 4, 3, 2]
+            except (AttributeError, UnicodeDecodeError) as e:
+                return {"status": 1, "code": e}
+
+        try:
+            remove = [12, 8, 7, 6, 4, 3, 2]  # Delete in reverse order to make field positions simpler.
             for row in ticklist:
                 for i in remove:
                     del row[i]
-            # Remove the CSV header
-            del ticklist[0]
-            return {"status": 0, "data": ticklist}
-        except (AttributeError, IndexError, UnicodeDecodeError) as e:
+            del ticklist[0]  # Remove the CSV header
+        except IndexError as e:
             return {"status": 1, "code": e}
+
+        return {"status": 0, "data": ticklist}
 
 
 class MountainProjectHandler(MountainProjectParser):
@@ -63,18 +67,19 @@ class MountainProjectHandler(MountainProjectParser):
 
     def _mp_generic_request(self, obj_key: str,  url: str, params: Dict = None, timeout: int = 30):
         try:
-            r = requests.get(url, params, timeout=timeout)
-            # add response to super class dictionary for processing.
-            self.api_data.update({obj_key: r})
-            return r
+            mp_request = requests.get(url, params, timeout=timeout)
         except (ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError):
             # TODO We should think about error handling a little bit more
-            return {"status": 1, "code": r.status_code}
+            return {"status": 1, "code": mp_request.status_code}
+
+        self.api_data.update({obj_key: mp_request})  # add response to super class dictionary for processing.
+        return mp_request
 
     def fetch_user(self) -> Union["requests", Dict]:
         """Executes request to /data/get-user endpoint."""
         if self.dev_env:
             return _DEV_USER_DATA
+
         params = {"key": self._api_key, "email": self._email}
         return self._mp_generic_request(
             url=f"{self.base_url}/data/get-user",
@@ -86,6 +91,7 @@ class MountainProjectHandler(MountainProjectParser):
         """Executes request to /user/<mp_id>/<mp_username>/tick-export."""
         if self.dev_env:
             return
+
         return self._mp_generic_request(
             url=f"{self.base_url}/user/{self._mp_id}/{self._mp_username}/tick-export",
             obj_key='tick_list'
