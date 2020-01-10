@@ -64,7 +64,6 @@ class MountainProjectHandler(MountainProjectParser):
     def _mp_generic_request(self, obj_key: str,  url: str, params: Dict = None, timeout: int = 30):
         try:
             r = requests.get(url, params, timeout=timeout)
-            r.raise_for_status()
             # add response to super class dictionary for processing.
             self.api_data.update({obj_key: r})
             return r
