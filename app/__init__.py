@@ -72,7 +72,7 @@ def create_app(test_config=None):
             api.fetch_tick_list()
             csv = api.parse_tick_list(dev_env=dev_env)
             # lookup mp user id
-            mp_user_id = user_data.get("id")
+            mp_user_id = user_data.get("mp_id")
             # Check for successful data return
             if csv.get("status") == 1:
                 e = (f"Error retriving ticklist. MP Reply: {csv.get('code')}."

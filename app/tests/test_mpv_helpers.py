@@ -1,3 +1,5 @@
+import encodings
+
 import pytest
 import requests
 from mysql.connector import CMySQLConnection, Error, MySQLConnection
@@ -27,11 +29,9 @@ def test_failed_db_connection() -> None:
 
 
 class MockResponse:
-    # mock json() method always returns a specific testing dictionary
-    @staticmethod
-    def fetch_user():
-        # Lets return a mock Response object so we can later call .json()
+    def __call__(self):
         return requests.models.Response
+    # mock json() method always returns a specific testing dictionary
 
     @staticmethod
     def json():
@@ -43,29 +43,36 @@ def test_prod_env_mp_handler(monkeypatch):
     """Any arguments may be passed and mocked functions will always return our mocked objects."""
     def mock_get(*args, **kwargs):
         # Returns an empty requests.Response object
-        return MockResponse().fetch_user()
+        return MockResponse()
 
     def mock_json(*args, **kwargs):
-        # When Response.json() is called, return our test data instead of decoding JSON.
-        return test_user_data
+        # When Response.json() is called, return our test data instead of actually calling that method.
+        return MockResponse().json()
 
-    # apply the monkeypatch for requests.get to mock_get()
+    # apply the monkeypatch's
     monkeypatch.setattr(requests, "get", mock_get)
-    # apply the monkeypatch for requests.models.Response to mock_json()
     monkeypatch.setattr(requests.models.Response, "json", mock_json)
 
+    # Create MountainProjectHandler instance which will use monkeypatch and test data.
     api = MountainProjectHandler(email="test_email@example.com", api_key='test_key', dev_env=False)
-    # api.fetch_user, which contains requests.get(), uses monkeypatch
     api.fetch_user()
-    # api.parse_user_data(), which contains Response.json(), uses monkeypatch.
     data = api.parse_user_data()
+
+    # Make assertions of returned data from MountainProjectParser.
     assert data['mp_id'] == 105324100
     assert data["name"] == "Test User"
     assert data["status"] == 0
 
 
 def test_dev_env_mp_handler():
+    # dev_env=True, so simply assert returned data matches _DEV_USER_DATA
     api = MountainProjectHandler(email="test_email@example.com", api_key='test_key', dev_env=True)
-    result = api.fetch_user()
+    response = api.fetch_user()
+    assert response["name"] == "Dev"
+    assert response["mp_id"] == 1111
+
+    # assert MountainProjectParser simply returns the desired response.
+    result = api.parse_user_data(dev_env=True)
+    assert result['mp_id'] == 1111
     assert result["name"] == "Dev"
-    assert result["id"] == 1111
+    assert result["status"] == 0
