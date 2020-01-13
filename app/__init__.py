@@ -1,7 +1,7 @@
 """
-A small webapp that functions on MountainProject.com data.
+A webapp that functions on MountainProject.com data.
 
-It imports data based on a user ID, then analyzes and displays it.
+It imports data based on a user email address, then analyzes and displays it.
 
 Code by Zach Wahrer [github.com/zachtheclimber]
 and BenfromEarth [github.com/benjpalmer].
@@ -72,7 +72,7 @@ def create_app(test_config=None):
             # Get ticklist from MP via CSV
             api.fetch_tick_list()
             csv = api.parse_tick_list(dev_env=dev_env)
-            # lookup mp user id
+            # Lookup MP user id
             mp_user_id = user_data.get("mp_id")
             # Check for successful data return
             if csv.get("status") == 1:
