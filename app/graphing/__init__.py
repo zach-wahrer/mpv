@@ -1,19 +1,20 @@
 """Graphing functions for the MPV web app."""
 
 import statistics
+from bokeh.embed import components
 from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
-from bokeh.embed import components
 from bokeh.transform import dodge
+from mysql.connector import MySQLConnection
 
 TOOLS = "reset,pan,wheel_zoom,box_zoom,save"
 
 
-def height_climbed(cursor, userid, units):
-    """Compute height climbed and make graph."""
-    # Get the years for current user
-    years = get_years(cursor, userid)
-    # Set the vars for ticks with no heights
+def height_climbed(cursor: MySQLConnection.cursor, mp_user_id: int, units: str) -> dict:
+    """Compute height climbed and return a graph."""
+    # Get the years the current user user was active
+    years = get_years(cursor, mp_user_id)
+    # Set vars for ticks with no heights
     year_height = dict()
     defaults = {"Aid": 75, "Boulder": 8, "Ice": 100, "Mixed": 100,
                 "Snow": 200, "Sport": 75, "TR": 50, "Trad": 150}
@@ -22,21 +23,19 @@ def height_climbed(cursor, userid, units):
         select = """SELECT `height`, `type`.`type` FROM `%s`
                  JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
                  WHERE YEAR(`date`) = '%s';"""
-        cursor.execute(select, (userid, userid, year))
+        cursor.execute(select, (mp_user_id, mp_user_id, year))
         ticks = cursor.fetchall()
-        # Loop through all ticks for current year
+        # Check that climbs have heights, set defualts if not
         for row in ticks:
-            # Check if height is undefined, add a variable amount
             if row[0] is None:
                 for key in defaults:
                     if row[1] == key:
                         year_height = add_to_year(year,
                                                   defaults[key], year_height)
-            # Otherwise add it to the yearly total
             else:
                 year_height = add_to_year(year, row[0], year_height)
 
-    # Calculate total height
+    # Calculate total height climbed
     total_height = int()
     for year in year_height.keys():
         total_height += year_height[year]
@@ -49,7 +48,7 @@ def height_climbed(cursor, userid, units):
             height[i] = int(height[i] / 3.28)
         total_height = int(total_height / 3.28)
 
-    # Add commas to the total height
+    # Add commas to the total height output
     total_height = format(total_height, ',d')
 
     # Generate a graph
@@ -61,7 +60,6 @@ def height_climbed(cursor, userid, units):
                   sizing_mode='scale_both', tools=TOOLS)
     plot.line(years, height, line_width=2, line_color="blue")
     plot.circle(years, height, size=8, fill_color="white", line_color="blue")
-    # Set label for selected units
     if units == "meters":
         plot.yaxis.axis_label = 'Meters'
     else:
@@ -73,44 +71,43 @@ def height_climbed(cursor, userid, units):
     return {"total": total_height, "plot": [script, div]}
 
 
-def pitches_climbed(cursor, userid):
+def pitches_climbed(cursor: MySQLConnection.cursor, mp_user_id: int) -> dict:
     """Pitches, routes, problems graph and info."""
+    pitches = list()
+    routes = list()
+    problems = list()
+
     # Get all-time pitch count
     select = "SELECT SUM(`pitches`) FROM `%s`;"
-    cursor.execute(select, (userid,))
+    cursor.execute(select, (mp_user_id,))
     sum = cursor.fetchone()
 
-    # Get data for routes/pitches/problems graph
-    years = get_years(cursor, userid)
+    # Get the years the current user user was active
+    years = get_years(cursor, mp_user_id)
 
-    routes = list()
+    # Get total routes climbed for each year
     select = """SELECT COUNT('name') from `%s`
                 JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
                 WHERE YEAR(`date`) = '%s' AND `type`.`type` != 'Boulder';"""
     for year in years:
-        # Get total routes climbed for each year
-        cursor.execute(select, (userid, userid, year))
+        cursor.execute(select, (mp_user_id, mp_user_id, year))
         routes.append(cursor.fetchone())
 
-    pitches = list()
-    problems = list()
+    # Get all pitches/problems for a given year
     types = ["!= 'Boulder';", "= 'Boulder';"]
     select = """SELECT SUM(`pitches`) FROM `%s`
                 JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
                 WHERE YEAR(`date`) = '%s' AND `type`.`type` %s"""
-
-    # Loop through years for each type
     for type in types:
         for year in years:
-            # Get all pitches/problems for year
-            cursor.execute(select % (userid, userid, year, type))
+            cursor.execute(select % (mp_user_id, mp_user_id, year, type))
             if type == "= 'Boulder';":
                 problems.append(cursor.fetchone())
             else:
                 tmp = cursor.fetchone()
                 pitches.append(tmp[0])
 
-    # Generate graph
+    # Generate the graph
     TOOLTIPS = [
         ("Year", "@years"),
         ("Pitches", "@pitches{0,0}"),
@@ -124,7 +121,6 @@ def pitches_climbed(cursor, userid):
 
     plot = figure(title="Pitches / Routes / Problems Per Year",
                   plot_height=400, sizing_mode='stretch_both', tools=TOOLS)
-
     re1 = plot.vbar(x=dodge('years', -0.211, range=plot.x_range),
                     top='pitches', bottom=0, width=0.4, color="blue",
                     legend_label="Pitches", source=ColumnDataSource(data=data))
@@ -152,25 +148,25 @@ def pitches_climbed(cursor, userid):
     return {"total": sum[0], "plot": [script, div]}
 
 
-def grade_scatter(cursor, userid, type):
+def grade_scatter(cursor: MySQLConnection.cursor, mp_user_id: int, type: str) -> list:
     """Create grade scatter graph."""
     # Get grades ticked each year
-    years = get_years(cursor, userid)
-    grades = get_grades(cursor, userid, type)
+    years = get_years(cursor, mp_user_id)
+    grades = get_grades(cursor, mp_user_id, type)
     grade_data = list()
     year_data = list()
-    year_mean = list()
-    year_mode = list()
-    year_mean_year = list()
-    year_mode_year = list()
+    mean_values = list()
+    mode_values = list()
+    mean_years = list()
+    mode_years = list()
     select = """SELECT `code`.`id`, `code`.`code` FROM `%s`
             JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
             JOIN `mpv`.`code` ON `mpv`.`code`.`id` = `%s`.`code`
             WHERE YEAR(`date`) = '%s' AND `type`.`type` = '%s'
             ORDER BY `code`.`id` ASC;"""
     for year in years:
-        cursor.execute(select % (userid, userid, userid, year, type))
         tmp_grades = list()
+        cursor.execute(select % (mp_user_id, mp_user_id, mp_user_id, year, type))
         for row in cursor.fetchall():
             grade_data.append(row[1])
             year_data.append(year)
@@ -184,12 +180,12 @@ def grade_scatter(cursor, userid, type):
                     ORDER BY ABS(`code`.`id` - '%s') LIMIT 1;"""
             cursor.execute(query % (mode,))
             for row in cursor.fetchone():
-                year_mode.append(row)
-                year_mode_year.append(year)
+                mode_values.append(row)
+                mode_years.append(year)
             cursor.execute(query % (mean,))
             for row in cursor.fetchone():
-                year_mean.append(row)
-                year_mean_year.append(year)
+                mean_values.append(row)
+                mean_years.append(year)
 
     # Check for MP no code bug, return nothing if so
     if not grade_data:
@@ -198,14 +194,14 @@ def grade_scatter(cursor, userid, type):
     # Generate graph
     data = {"years": year_data,
             "grades": grade_data}
-    mean_mode = {"year_mode_year": year_mode_year,
-                 "year_mean_year": year_mean_year,
-                 "year_mode": year_mode,
-                 "year_mean": year_mean}
+    mean_mode = {"mode_years": mode_years,
+                 "mean_years": mean_years,
+                 "mode_values": mode_values,
+                 "mean_values": mean_values}
     TOOLTIPS = [
-        ("Year:", "@year_mode_year"),
-        ("Most Ticked:", "@year_mode"),
-        ("Average Grade:", "@year_mean")
+        ("Year:", "@mode_years"),
+        ("Most Ticked:", "@mode_values"),
+        ("Average Grade:", "@mean_values")
     ]
 
     plot = figure(title=(type + " Grades By Year"), y_range=grades,
@@ -213,11 +209,11 @@ def grade_scatter(cursor, userid, type):
     plot.scatter('years', 'grades', size=14, alpha=0.2,
                  source=ColumnDataSource(data=data))
     # Don't draw mean/mode if only 1 year of data
-    if len(year_mode_year) > 1:
-        re = plot.line("year_mode_year", "year_mode", line_width=2,
+    if len(mode_years) > 1:
+        re = plot.line("mode_years", "mode_values", line_width=2,
                        line_color="red", legend_label="Most Ticked",
                        source=ColumnDataSource(data=mean_mode))
-        plot.line("year_mean_year", "year_mean", line_width=2,
+        plot.line("mean_years", "mean_values", line_width=2,
                   line_color="orange", legend_label="Average Grade",
                   source=ColumnDataSource(data=mean_mode))
         plot.add_tools(HoverTool(tooltips=TOOLTIPS, mode='vline',
@@ -236,13 +232,13 @@ def grade_scatter(cursor, userid, type):
     return [script, div]
 
 
-def get_grades(cursor, userid, type):
+def get_grades(cursor: MySQLConnection.cursor, mp_user_id: int, type: str) -> list:
     """Get all grades user has ticked of specified type."""
     select = """SELECT DISTINCT `code`.`code`, `code`.`id` FROM `%s`
              JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`
              JOIN `mpv`.`code` ON `mpv`.`code`.`id` = `%s`.`code`
              WHERE `type`.`type` = '%s' ORDER BY `code`.`id` ASC;"""
-    cursor.execute(select % (userid, userid, userid, type))
+    cursor.execute(select % (mp_user_id, mp_user_id, mp_user_id, type))
     grades = cursor.fetchall()
     # Format the grades
     for i in range(0, len(grades)):
@@ -250,23 +246,23 @@ def get_grades(cursor, userid, type):
     return grades
 
 
-def get_years(cursor, userid):
-    """Get all years for user."""
+def get_years(cursor: MySQLConnection.cursor, mp_user_id: int) -> list:
+    """Get all years a user was active."""
     select = "SELECT DISTINCT YEAR(`date`) FROM `%s`;"
-    cursor.execute(select, (userid,))
+    cursor.execute(select, (mp_user_id,))
     years = cursor.fetchall()
-    # Format the get_years
+    # Format the years
     for i in range(0, len(years)):
         years[i] = years[i][0]
     years.sort()
     return years
 
 
-def get_types(cursor, userid):
-    """Get all of the types of climbing a user did."""
+def get_types(cursor: MySQLConnection.cursor, mp_user_id: int) -> list:
+    """Get all of the types of climbing a user has done."""
     select = """SELECT DISTINCT `type`.`type` FROM `%s`
                 JOIN `mpv`.`type` ON `mpv`.`type`.`id` = `%s`.`type`;"""
-    cursor.execute(select, (userid, userid))
+    cursor.execute(select, (mp_user_id, mp_user_id))
     types = cursor.fetchall()
     # Format the types
     for i in range(0, len(types)):
@@ -274,7 +270,7 @@ def get_types(cursor, userid):
     return types
 
 
-def add_to_year(year, height, year_height):
+def add_to_year(year: int, height: int, year_height: dict) -> dict:
     """Add height to a given year."""
     if year in year_height:
         year_height[year] = year_height[year] + height
