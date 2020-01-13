@@ -1,8 +1,10 @@
 """
-A small webapp that functions on MountainProject.com data.
+A webapp that functions on MountainProject.com data.
 
-It imports data based on a user ID, then analyzes and displays it.
-Code by Zach Wahrer.
+It imports data based on a user email address, then analyzes and displays it.
+
+Code by Zach Wahrer [github.com/zachtheclimber]
+and BenfromEarth [github.com/benjpalmer].
 """
 
 import re
@@ -16,9 +18,10 @@ from .helpers.mountain_project import MountainProjectHandler
 
 
 def create_app(test_config=None):
+    """Create Flask app to generate web controller."""
     app = Flask(__name__)
-    # Get config values from object. If we are in a testing env,
-    # then lets load the necessary config details.
+
+    # Get config values. If we are in testing env, load the test config.
     if test_config:
         app.config.from_object(test_config)
     else:
@@ -26,19 +29,18 @@ def create_app(test_config=None):
 
     @app.route("/", methods=["GET", "POST"])
     def index():
-        """Show main page."""
+        """Show main user input page."""
         return render_template("index.html")
 
     @app.route("/data", methods=["GET", "POST"])
     def data():
-        """Do data magic."""
+        """Process input data and output graphs."""
         if request.method == "POST":
 
-            # Check for test link click
+            # Check for test link click from input page
             if request.form.get("test") == "yes":
                 email = app.config["TEST_ACCT"]
                 units = "feet"
-            # Otherwise, import values normally
             else:
                 email = request.form.get("email")
                 units = request.form.get("units")
@@ -70,7 +72,7 @@ def create_app(test_config=None):
             # Get ticklist from MP via CSV
             api.fetch_tick_list()
             csv = api.parse_tick_list(dev_env=dev_env)
-            # lookup mp user id
+            # Lookup MP user id
             mp_user_id = user_data.get("mp_id")
             # Check for successful data return
             if csv.get("status") == 1:
@@ -81,7 +83,8 @@ def create_app(test_config=None):
             # Check for dev mode
             if not dev_env:
                 # Put user's ticklist into the database
-                database = db_load(mp_user_id, csv.get("data"), config=app.config)
+                database = db_load(mp_user_id, csv.get("data"),
+                                   config=app.config)
                 # Check for database success
                 if database['status'] == 1:
                     e = f"Database error: {database['error']}"
@@ -102,7 +105,6 @@ def create_app(test_config=None):
                 if reply:
                     grade_scatters.append(reply)
 
-            # Close the connection to the database
             db_close(cursor, connection)
 
             # Show final output
@@ -118,4 +120,5 @@ def create_app(test_config=None):
         # Send them back to the index if they try to GET
         else:
             return redirect("/")
+
     return app
