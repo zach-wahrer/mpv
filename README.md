@@ -15,16 +15,16 @@ MPV is currently in development. If you'd like to help out, feel free to jump in
 1. Make sure you have Python 3.6 installed on your machine, then run the following
 shell command: `pip install -r requirements.txt`
 
-1. On your MySQL server, create a table called `mpv`. Create a user and give them access to it. Or see next section on how
+2. On your MySQL server, create a table called `mpv`. Create a user and give them access to it. Or see next section on how
 to setup database from docker.
 
-2. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
+3. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
 
-3. From your root project directory, run `python -m app.setup.db_setup`. This will create and populate the required key tables in the MPV database.
+4. From your root project directory, run `python -m app.setup.db_setup`. This will create and populate the required key tables in the MPV database.
 
-4. To run the application on osx or Linux, set the `FLASK_APP` environment variable to `application` by running `export FLASK_APP=application`
+5. To run the application on osx or Linux, set the `FLASK_APP` environment variable to `application` by running `export FLASK_APP=application`
 
-5. Now, run `application.py` with Flask by using running the shell command `flask run`, and you should be up and running!
+6. Now, run `application.py` with Flask by using running the shell command `flask run`, and you should be up and running!
 
 ### Database setup with docker
 1. Navigate to the root directory of the MPV project on your machine
