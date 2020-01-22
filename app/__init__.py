@@ -6,9 +6,6 @@ It imports data based on a user email address, then analyzes and displays it.
 Code by Zach Wahrer [github.com/zachtheclimber]
 and BenfromEarth [github.com/benjpalmer].
 """
-
-import re
-
 from flask import Flask, render_template, request, redirect
 
 from .config import *
