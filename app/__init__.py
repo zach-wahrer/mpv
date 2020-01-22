@@ -12,6 +12,7 @@ import re
 from flask import Flask, render_template, request, redirect
 
 from .config import *
+from .forms.email_form import EmailPasswordForm
 from .graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 from .helpers.database_connection import db_close, db_connect, db_load
 from .helpers.mountain_project import MountainProjectHandler
@@ -29,8 +30,19 @@ def create_app(test_config=None):
 
     @app.route("/", methods=["GET", "POST"])
     def index():
-        """Show main user input page."""
-        return render_template("index.html")
+        form = EmailPasswordForm()
+        if form.validate_on_submit():
+            return redirect("/data", code=307)
+
+        return render_template("index.html", form=form, error=True)
+
+    @app.errorhandler(404)
+    def handle_four_oh_four(e):
+        return render_template("error.html", data="Whoops you got off route, that page does not exist"), 404
+
+    @app.errorhandler(Exception)
+    def handle_500(e):
+        return render_template("error.html", data=e), 500
 
     @app.route("/data", methods=["GET", "POST"])
     def data():
@@ -45,12 +57,6 @@ def create_app(test_config=None):
                 email = request.form.get("email")
                 units = request.form.get("units")
 
-            # Input validation - Thanks to emailregex.com for the regex
-            regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-            if not re.match(regex, email):
-                e = "Please enter a valid email."
-                return render_template("error.html", data=e)
-            # First let's make sure we are not in a dev env.
             dev_env = app.config.get("MPV_DEV")
             # Get user and id from MP
             api = MountainProjectHandler(
