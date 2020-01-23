@@ -41,16 +41,6 @@ def create_app(test_config=None):
 
             return render_template("index.html", form=form, error=show_error_message)
 
-    @app.errorhandler(404)
-    def handle_404(error):
-        logging.exception(error)
-        return render_template("error.html", data=error), 404
-
-    @app.errorhandler(DatabaseConnectionException)
-    def handle_503(error):
-        logging.exception(error)
-        return render_template("error.html", data=DatabaseConnectionException.msg), 503
-
     @app.route("/data", methods=["GET", "POST"])
     def data():
         """Process input data and output graphs."""
@@ -73,45 +63,23 @@ def create_app(test_config=None):
             )
             api.fetch_user()
             user_data = api.parse_user_data(dev_env=dev_env)
-            # Check for a successful return from MP
-            if user_data.get("status") == 1:
-                e = (f"Connection error. MP Reply: {user_data.get('code')}. "
-                     f"Please make sure you supplied a valid API key.")
-                return render_template("error.html", data=e)
-            elif user_data.get("status") == 2:
-                e = "There is no user for that email. Please try again."
-                return render_template("error.html", data=e)
 
             # Get ticklist from MP via CSV
             api.fetch_tick_list()
             csv = api.parse_tick_list(dev_env=dev_env)
             # Lookup MP user id
             mp_user_id = user_data.get("mp_id")
-            # Check for successful data return
-            if csv.get("status") == 1:
-                e = (f"Error retriving ticklist. MP Reply: {csv.get('code')}."
-                     f" Please try again later.")
-                return render_template("error.html", data=e)
-
             # Check for dev mode
             if not dev_env:
                 # Put user's ticklist into the database
-                database = db_load(mp_user_id, csv.get("data"),
-                                   config=app.config)
-                # Check for database success
-                if database['status'] == 1:
-                    e = f"Database error: {database['error']}"
-                    return render_template('error.html', data=e)
-
+                db_load(mp_user_id, csv.get("data"), config=app.config)
             # Connect to database for graph and stats generation
             connection = db_connect(config=app.config)
             cursor = connection.cursor()
-
             # Generate the stats and draw graph
             height = height_climbed(cursor, mp_user_id, units)
             pitches = pitches_climbed(cursor, mp_user_id)
-
-            grade_scatters = list()
+            grade_scatters = []
             for type in get_types(cursor, mp_user_id):
                 reply = grade_scatter(cursor, mp_user_id, type)
                 # Check for empty returns
@@ -133,5 +101,25 @@ def create_app(test_config=None):
         # Send them back to the index if they try to GET
         else:
             return redirect("/")
+
+    @app.errorhandler(RequestException)
+    def handle_400(error):
+        logging.exception(error)
+        return render_template("error.html", data=RequestException.msg), 400
+
+    @app.errorhandler(MPAPIException)
+    def handle_403(error):
+        logging.exception(error)
+        return render_template("error.html", data=MPAPIException.msg), 403
+
+    @app.errorhandler(404)
+    def handle_404(error):
+        logging.exception(error)
+        return render_template("error.html", data=error), 404
+
+    @app.errorhandler(DatabaseException)
+    def handle_503(error):
+        logging.exception(error)
+        return render_template("error.html", data=DatabaseException.msg), 503
 
     return app

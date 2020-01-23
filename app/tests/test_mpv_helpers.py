@@ -3,9 +3,10 @@ from typing import Dict
 import pytest
 import requests
 from _pytest.monkeypatch import MonkeyPatch
-from mysql.connector import CMySQLConnection, Error, MySQLConnection
+from mysql.connector import CMySQLConnection, MySQLConnection
 
 from .test_data.mp_api_response import test_expected_data, test_processed_csv, test_ticks_response, test_user_data
+from ..errors import *
 from ..helpers.database_connection import db_connect, db_close
 from ..helpers.mountain_project import MountainProjectHandler
 
@@ -24,7 +25,7 @@ class TestDatabaseHelpers:
 
     def test_failed_db_connection(self) -> None:
         """Asserts that errors raised during the connection process due to improper config values are caught."""
-        with pytest.raises(Error):
+        with pytest.raises(DatabaseException):
             db_connect(config={})
 
 

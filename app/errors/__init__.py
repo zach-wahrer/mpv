@@ -1,8 +1,14 @@
-class APIKeyInvalidException(Exception):
+class MPAPIException(Exception):
     status_code = 403
-    msg = "Please make sure you supplied a valid API key."
+    msg = "An error occurred fetching data the Mountain Project API. Make sure are using your correct email address, " \
+          "or try your request later."
 
 
-class DatabaseConnectionException(Exception):
+class DatabaseException(Exception):
     status_code = 503
-    msg = "Database is messed up"
+    msg = "Something went wrong on our end. We are working on a fix, please try again later."
+
+
+class RequestException(Exception):
+    status_code = 400
+    msg = "Something went wrong on our end. We are working on a fix, please try again later."

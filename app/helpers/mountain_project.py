@@ -4,7 +4,7 @@ from typing import Dict, Union
 import requests
 from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
 
-from ..errors import APIKeyInvalidException
+from ..errors import *
 
 
 _DEV_USER_DATA = {"status": 0, "name": "Dev", "mp_id": 1111}
@@ -28,7 +28,7 @@ class MountainProjectParser:
                 user_data = self.api_data.get('user_data').json()
             except ValueError:
                 # In case the JSON decoding fails, r.json() raises a ValueError.
-                return {"status": 2}
+                raise MPAPIException
 
             self._mp_id = user_data.get("id")
             self._mp_username = user_data.get("name")
@@ -44,7 +44,7 @@ class MountainProjectParser:
                 tick_list = self.api_data.get("tick_list").content.decode("utf-8")
                 ticklist = list(csv.reader(tick_list.splitlines(), delimiter=','))
             except (AttributeError, UnicodeDecodeError) as e:
-                return {"status": 1, "code": e}
+                raise MPAPIException
 
         try:
             remove = [12, 8, 7, 6, 4, 3, 2]  # Delete in reverse order to make field positions simpler.
@@ -53,7 +53,7 @@ class MountainProjectParser:
                     del row[i]
             del ticklist[0]  # Remove the CSV header
         except IndexError as e:
-            return {"status": 1, "code": e}
+            raise MPAPIException
 
         return {"status": 0, "data": ticklist}
 
@@ -71,7 +71,7 @@ class MountainProjectHandler(MountainProjectParser):
         try:
             mp_request = requests.get(url, params, timeout=timeout)
         except (ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError):
-            return {"status": 1, "code": mp_request.status_code}
+            raise RequestException
 
         self.api_data.update({obj_key: mp_request})  # add response to super class dictionary for processing.
         return mp_request
