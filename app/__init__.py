@@ -6,9 +6,12 @@ It imports data based on a user email address, then analyzes and displays it.
 Code by Zach Wahrer [github.com/zachtheclimber]
 and BenfromEarth [github.com/benjpalmer].
 """
+import logging
+
 from flask import Flask, render_template, request, redirect
 
 from .config import *
+from .errors import *
 from .forms.email_form import EmailPasswordForm
 from .graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 from .helpers.database_connection import db_close, db_connect, db_load
@@ -30,16 +33,23 @@ def create_app(test_config=None):
         form = EmailPasswordForm()
         if form.validate_on_submit():
             return redirect("/data", code=307)
+        else:
+            if form.errors.get('email'):
+                show_error_message = True
+            else:
+                show_error_message = False
 
-        return render_template("index.html", form=form, error=True)
+            return render_template("index.html", form=form, error=show_error_message)
 
     @app.errorhandler(404)
-    def handle_four_oh_four(e):
-        return render_template("error.html", data="Whoops you got off route, that page does not exist"), 404
+    def handle_404(error):
+        logging.exception(error)
+        return render_template("error.html", data=error), 404
 
-    @app.errorhandler(Exception)
-    def handle_500(e):
-        return render_template("error.html", data=e), 500
+    @app.errorhandler(DatabaseConnectionException)
+    def handle_503(error):
+        logging.exception(error)
+        return render_template("error.html", data=DatabaseConnectionException.msg), 503
 
     @app.route("/data", methods=["GET", "POST"])
     def data():

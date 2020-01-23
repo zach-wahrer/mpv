@@ -2,6 +2,8 @@ from typing import Dict, Union
 
 from mysql.connector import connect, Error, MySQLConnection, CMySQLConnection
 
+from ..errors import DatabaseConnectionException
+
 
 def db_connect(config: Dict) -> Union[MySQLConnection, CMySQLConnection]:
     """Create connection to database."""
@@ -9,8 +11,8 @@ def db_connect(config: Dict) -> Union[MySQLConnection, CMySQLConnection]:
         connection = connect(
             host=config.get("MYSQL_ADDRESS"), database=config.get("MYSQL_TABLE"),
             user=config.get("MYSQL_USER"), password=config.get("MYSQL_PASSWD"))
-    except (AttributeError, Error, NameError) as e:
-        raise e
+    except (AttributeError, Error, NameError):
+        raise DatabaseConnectionException
 
     connection.autocommit = True
     return connection

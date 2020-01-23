@@ -4,6 +4,8 @@ from typing import Dict, Union
 import requests
 from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
 
+from ..errors import APIKeyInvalidException
+
 
 _DEV_USER_DATA = {"status": 0, "name": "Dev", "mp_id": 1111}
 _DEV_TEST_TICKS = "test_ticks.csv"
