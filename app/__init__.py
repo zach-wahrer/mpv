@@ -11,8 +11,8 @@ import logging
 from flask import Flask, render_template, request, redirect
 
 from .config import *
-from .errors import *
-from .forms.email_form import EmailPasswordForm
+from .errors.error_handlers import errors
+from .forms.email_form import MPVEmailForm
 from .graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 from .helpers.database_connection import db_close, db_connect, db_load
 from .helpers.mountain_project import MountainProjectHandler
@@ -21,8 +21,10 @@ from .helpers.mountain_project import MountainProjectHandler
 def create_app(test_config=None):
     """Create Flask app to generate web controller."""
     app = Flask(__name__)
+    # Initialize error handlers.
+    app.register_blueprint(errors)
 
-    # Get config values. If we are in testing env, load the test config.
+    # If we are in testing env, load the test config.
     if test_config:
         app.config.from_object(test_config)
     else:
@@ -30,7 +32,7 @@ def create_app(test_config=None):
 
     @app.route("/", methods=["GET", "POST"])
     def index():
-        form = EmailPasswordForm()
+        form = MPVEmailForm()
         if form.validate_on_submit():
             return redirect("/data", code=307)
         else:
@@ -101,25 +103,5 @@ def create_app(test_config=None):
         # Send them back to the index if they try to GET
         else:
             return redirect("/")
-
-    @app.errorhandler(RequestException)
-    def handle_400(error):
-        logging.exception(error)
-        return render_template("error.html", data=RequestException.msg), 400
-
-    @app.errorhandler(MPAPIException)
-    def handle_403(error):
-        logging.exception(error)
-        return render_template("error.html", data=MPAPIException.msg), 403
-
-    @app.errorhandler(404)
-    def handle_404(error):
-        logging.exception(error)
-        return render_template("error.html", data=error), 404
-
-    @app.errorhandler(DatabaseException)
-    def handle_503(error):
-        logging.exception(error)
-        return render_template("error.html", data=DatabaseException.msg), 503
 
     return app

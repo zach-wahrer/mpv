@@ -2,7 +2,7 @@ from typing import Dict, Union
 
 from mysql.connector import connect, Error, MySQLConnection, CMySQLConnection
 
-from ..errors import DatabaseException
+from ..errors.exeptions import DatabaseException
 
 
 def db_connect(config: Dict) -> Union[MySQLConnection, CMySQLConnection]:

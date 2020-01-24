@@ -6,7 +6,7 @@ from _pytest.monkeypatch import MonkeyPatch
 from mysql.connector import CMySQLConnection, MySQLConnection
 
 from .test_data.mp_api_response import test_expected_data, test_processed_csv, test_ticks_response, test_user_data
-from ..errors import *
+from ..errors.exeptions import *
 from ..helpers.database_connection import db_connect, db_close
 from ..helpers.mountain_project import MountainProjectHandler
 
