@@ -6,9 +6,7 @@ It imports data based on a user email address, then analyzes and displays it.
 Code by Zach Wahrer [github.com/zachtheclimber]
 and BenfromEarth [github.com/benjpalmer].
 """
-import logging
-
-from flask import Flask, render_template, request, redirect
+from flask import Flask, redirect, render_template, request
 
 from .config import *
 from .errors.error_handlers import errors
@@ -36,12 +34,7 @@ def create_app(test_config=None):
         if form.validate_on_submit():
             return redirect("/data", code=307)
         else:
-            if form.errors.get('email'):
-                show_error_message = True
-            else:
-                show_error_message = False
-
-            return render_template("index.html", form=form, error=show_error_message)
+            return render_template("index.html", form=form)
 
     @app.route("/data", methods=["GET", "POST"])
     def data():
@@ -82,14 +75,13 @@ def create_app(test_config=None):
             height = height_climbed(cursor, mp_user_id, units)
             pitches = pitches_climbed(cursor, mp_user_id)
             grade_scatters = []
-            for type in get_types(cursor, mp_user_id):
-                reply = grade_scatter(cursor, mp_user_id, type)
+            for t in get_types(cursor, mp_user_id):
+                reply = grade_scatter(cursor, mp_user_id, t)
                 # Check for empty returns
                 if reply:
                     grade_scatters.append(reply)
 
             db_close(cursor, connection)
-
             # Show final output
             return render_template("data.html",
                                    username=user_data.get("name"),
