@@ -1,5 +1,5 @@
 import csv
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 import requests
 from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
@@ -88,7 +88,7 @@ class MountainProjectHandler(MountainProjectParser):
             obj_key='user_data'
         )
 
-    def fetch_tick_list(self) -> Union["requests", None]:
+    def fetch_tick_list(self) -> Optional["requests"]:
         """Executes request to /user/<mp_id>/<mp_username>/tick-export."""
         if self.dev_env:
             return
