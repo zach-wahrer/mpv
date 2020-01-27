@@ -9,11 +9,13 @@ from .test_data.mp_api_response import test_expected_data, test_processed_csv, t
 from ..errors.exeptions import *
 from ..helpers.database_connection import db_connect, db_close
 from ..helpers.mountain_project import MountainProjectHandler
+from app import create_app
 
 
 class TestDatabaseHelpers:
-    def test_connect(self, app):
+    def test_connect(self):
         """Asserts the database connection is made, closes and confirms closed connection."""
+        app = create_app()  # Bypass app fixture. Root config settings are used instead of test config.
         connection = db_connect(config=app.config)
         assert connection.autocommit
         assert connection.is_connected()

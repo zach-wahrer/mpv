@@ -5,7 +5,5 @@ from app import create_app
 
 @pytest.fixture
 def app() -> flask_app:
-    app = create_app()
-    app.config['TESTING'] = True
-    app.config['MP_DEV'] = True
+    app = create_app(test_config="app.tests.test_config")
     return app
