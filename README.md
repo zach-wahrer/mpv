@@ -18,7 +18,7 @@ shell command: `pip install -r requirements.txt`
 2. On your MySQL server, create a table called `mpv`. Create a user and give them access to it. Or see next section on how
 to setup database from docker.
 
-3. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. See the **Configuration** section below for help.
+3. In the `app` directory, rename `config.sample.py` to `config.py`. Open it and change the listed variables. See the **Configuration** section below for help.
 
 4. From your root project directory, run `python -m app.setup.db_setup`. This will create and populate the required key tables in the MPV database.
 
@@ -33,7 +33,7 @@ to setup database from docker.
 4. Password for development is `password`
 
 ### Configuration:
-This application looks for a `config.py` file located in the root directory of your project. With that in mind,
+This application looks for a `config.py` file located in the `app` directory of your project. With that in mind,
 structure your file to look like the example below, changing any values as necessary.
 ```
 SECRET_KEY = "super-secret-key"
