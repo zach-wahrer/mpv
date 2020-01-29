@@ -18,7 +18,7 @@ shell command: `pip install -r requirements.txt`
 2. On your MySQL server, create a table called `mpv`. Create a user and give them access to it. Or see next section on how
 to setup database from docker.
 
-3. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. You'll need a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data.
+3. Rename `config.sample.py` to `config.py`. Open it and change the listed variables. See the **Configuration** section below for help.
 
 4. From your root project directory, run `python -m app.setup.db_setup`. This will create and populate the required key tables in the MPV database.
 
@@ -46,6 +46,9 @@ MP_KEY = "Your_MountainProject_API_Key_Here"
 TEST_ACCT = "Your_MountainProject_Email_Acount_Here"
 MPV_DEV = True
 ```
+`SECRET_KEY` is used by Flask and extensions to "keep data safe". Set it to a random value. In the same vein, `WTF_CSRF_SECRET_KEY` is used by the `Flask-WTF` module. Assign it a different random value.
+
+`MP_KEY` is a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data. For more on `MPV_DEV`, see **Development Mode** below.
 
 ### Testing
 
