@@ -10,13 +10,18 @@
         </div>
 
         <!-- User input form -->
-        <form action="/data" method="post" class="needs-validation" novalidate>
+        <form action="" method="post"  >
+            {{ form.csrf_token }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <div class="row justify-content-center p-1" style="color: orangered"> *{{ error }} </div>
+                {% endfor %}
+            {% endif %}
         <div class="row justify-content-center p-2">
-            <input type="text" name="email" id="email" placeholder="MP Account Email" class="form-control col-md-5" autofocus>
+            <input type="text" name="email" id="email" required="required" placeholder="MP Account Email"  class="form-control col-md-5" autofocus />
         </div>
-
         <div class="row justify-content-center p-2">
-            <select class="form-control col-md-5" name="units">
+            <select class="form-control col-md-5" name="units" required="required">
                 <option value="feet" selected>-Units-</option>
                 <option value="feet">Feet</option>
                 <option value="meters">Meters</option>
@@ -26,24 +31,11 @@
         <div class="row justify-content-center" id="status" style="font-size: small;"></div>
 
         <div class="row justify-content-center p-2" id="vbutton">
-            <button class="btn btn-primary"  onclick="validateForm();"><b>Visualize!</b></button>
+            <button class="btn btn-primary"><b>Visualize!</b></button>
         </div>
         </form>
-
-        <!-- Form Validation -->
-        <script src="static/scripts.js"></script>
-        <script>
-            function validateForm() {
-                if (!checkEmail()){
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                else {
-                    return true;
-                }
-            }
-        </script>
         <!-- Privacy and how it works info -->
+        <script src="static/scripts.js"></script>
         <div class="text-center p-3" style="font-size: small;">
             <div class="row">
                 <div class="col">

@@ -32,8 +32,12 @@ to setup database from docker.
 3. To connect to the local mysql database instance with `mysql -u root -p mpv -h 127.0.0.1 -P 3306`
 4. Password for development is `password`
 
-Create your `config.py` file to look like:
+### Configuration:
+This application looks for a `config.py` file located in the root directory of your project. With that in mind,
+structure your file to look like the example below, changing any values as necessary.
 ```
+SECRET_KEY = "super-secret-key"
+WTF_CSRF_SECRET_KEY = "different-super-secret-key"
 MYSQL_USER = "root"
 MYSQL_PASSWD = "password"
 MYSQL_ADDRESS = "127.0.0.1"

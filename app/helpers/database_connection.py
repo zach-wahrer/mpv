@@ -2,6 +2,8 @@ from typing import Dict, Union
 
 from mysql.connector import connect, Error, MySQLConnection, CMySQLConnection
 
+from ..errors.exeptions import DatabaseException
+
 
 def db_connect(config: Dict) -> Union[MySQLConnection, CMySQLConnection]:
     """Create connection to database."""
@@ -9,8 +11,8 @@ def db_connect(config: Dict) -> Union[MySQLConnection, CMySQLConnection]:
         connection = connect(
             host=config.get("MYSQL_ADDRESS"), database=config.get("MYSQL_TABLE"),
             user=config.get("MYSQL_USER"), password=config.get("MYSQL_PASSWD"))
-    except (AttributeError, Error, NameError) as e:
-        raise e
+    except (AttributeError, Error, NameError):
+        raise DatabaseException
 
     connection.autocommit = True
     return connection
@@ -58,12 +60,12 @@ def db_load(userid, data, config=None):
         # Close database
         db_close(cursor, connection)
         # Return success
-        return {"status": 0}
+        return
 
     # Handle database errors if they occur
     except Error as e:
         db_close(cursor, connection)
-        return {"status": 1, "error": e}
+        raise DatabaseException
 
 
 def get_pairs(cursor):
