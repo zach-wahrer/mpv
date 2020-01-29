@@ -22,9 +22,7 @@ to setup database from docker.
 
 4. From your root project directory, run `python -m app.setup.db_setup`. This will create and populate the required key tables in the MPV database.
 
-5. To run the application on osx or Linux, set the `FLASK_APP` environment variable to `application` by running `export FLASK_APP=application`
-
-6. Now, start the application by using the shell command `flask run` in the root project directory, and you should be up and running!
+5. Now, start the application by using the shell command `flask run` in the root project directory, and you should be up and running!
 
 ### Database Setup With Docker
 1. Navigate to the root directory of the MPV project on your machine
