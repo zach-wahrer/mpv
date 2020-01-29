@@ -26,13 +26,13 @@ to setup database from docker.
 
 6. Now, start the application by using the shell command `flask run` in the root project directory, and you should be up and running!
 
-### Database setup with docker
+### Database Setup With Docker
 1. Navigate to the root directory of the MPV project on your machine
 2. run `docker-compose up`
 3. To connect to the local mysql database instance with `mysql -u root -p mpv -h 127.0.0.1 -P 3306`
 4. Password for development is `password`
 
-### Configuration:
+### Configuration
 This application looks for a `config.py` file located in the `app` directory of your project. With that in mind,
 structure your file to look like the example below, changing any values as necessary.
 ```
