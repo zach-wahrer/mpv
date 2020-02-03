@@ -14,12 +14,13 @@ def db_connect(config: Dict) -> Union[MySQLConnection, CMySQLConnection]:
     except (AttributeError, Error, NameError):
         raise DatabaseException
 
-    connection.autocommit = True
+    connection.autocommit = False
     return connection
-    
+
 
 def db_close(cursor: MySQLConnection.cursor, connection: Union[MySQLConnection, CMySQLConnection]) -> None:
     """Close down the database connection."""
+    connection.commit()
     cursor.close()
     connection.close()
 
