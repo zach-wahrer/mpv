@@ -9,6 +9,8 @@
             <h1>Mountain Project Visualizer</h1>
         </div>
 
+        <script src="static/scripts.js"></script>
+        
         <!-- User input form -->
         <form action="" method="post"  >
             {{ form.csrf_token }}
@@ -31,11 +33,10 @@
         <div class="row justify-content-center" id="status" style="font-size: small;"></div>
 
         <div class="row justify-content-center p-2" id="vbutton">
-            <button class="btn btn-primary"><b>Visualize!</b></button>
+            <button class="btn btn-primary" onclick="emailLoading();"><b>Visualize!</b></button>
         </div>
         </form>
         <!-- Privacy and how it works info -->
-        <script src="static/scripts.js"></script>
         <div class="text-center p-3" style="font-size: small;">
             <div class="row">
                 <div class="col">
@@ -48,7 +49,7 @@
                 <div class="p-2">
                     <form action="/data" name="testrun" method="post">
                         <input type="hidden" name="test" value="yes">
-                        <input type="submit" id="lbutton" value="Try it!" class="btn btn-danger btn-sm" onclick="loading();">
+                        <input type="submit" id="lbutton" value="Try it!" class="btn btn-danger btn-sm" onclick="testLoading();">
                     </form>
                     <div id="loadingframe"></div>
                 </div>

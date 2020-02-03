@@ -1,4 +1,13 @@
-function loading() {
+function emailLoading() {
+    email = document.getElementById("email").value;
+    if (email != "") {
+        document.getElementById('vbutton').style.display = "none";
+        document.getElementById('status').innerHTML = "<img src=static/blocks.gif />";
+        return true;
+    }
+}
+
+function testLoading() {
     document.getElementById("lbutton").style.display = "none";
     document.getElementById("loadingframe").innerHTML = "<img src='static/blocks.gif' />";
     return true;
