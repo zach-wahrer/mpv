@@ -17,7 +17,7 @@ class TestDatabaseHelpers:
         """Asserts the database connection is made, closes and confirms closed connection."""
         app = create_app()  # Bypass app fixture. Root config settings are used instead of test config.
         connection = db_connect(config=app.config)
-        assert connection.autocommit
+        assert not connection.autocommit
         assert connection.is_connected()
         assert isinstance(connection, (MySQLConnection, CMySQLConnection))
 
@@ -47,10 +47,12 @@ class TestMountainProjectHandler:
     def setup_class(cls):
         # Create MountainProjectHandler instances which will use monkeypatch and test data.
         cls.api_dev = MountainProjectHandler(email="test@example.com", api_key="", dev_env=True)
-        cls.api_prod = MountainProjectHandler(email="test_email@example.com", api_key='test_key', dev_env=False)
+        cls.api_prod = MountainProjectHandler(
+            email="test_email@example.com", api_key='test_key', dev_env=False)
 
         cls.monkeypatch = MonkeyPatch()
-        cls.monkeypatch.setattr(requests, "get", cls.mock_get)  # Apply monkeypatch to requests.get()
+        # Apply monkeypatch to requests.get()
+        cls.monkeypatch.setattr(requests, "get", cls.mock_get)
 
     @staticmethod
     def mock_get(*args, **kwargs) -> MockResponse:
