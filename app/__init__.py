@@ -50,7 +50,7 @@ def create_app(test_config=None):
                 units = request.form.get("units")
 
             dev_env = app.config.get("MPV_DEV")
-            # Get user and id from MP
+
             api = MountainProjectHandler(
                 api_key=app.config.get("MP_KEY"),
                 email=email,
@@ -58,19 +58,17 @@ def create_app(test_config=None):
             )
             api.fetch_user()
             user_data = api.parse_user_data(dev_env=dev_env)
+            mp_user_id = user_data.get("mp_id")
 
-            # Get ticklist from MP via CSV
             api.fetch_tick_list()
             csv = api.parse_tick_list(dev_env=dev_env)
-            # Lookup MP user id
-            mp_user_id = user_data.get("mp_id")
-            # Check for dev mode
+
             if not dev_env:
-                # Put user's ticklist into the database
                 db_load(mp_user_id, csv.get("data"), config=app.config)
-            # Connect to database for graph and stats generation
+
             connection = db_connect(config=app.config)
             cursor = connection.cursor()
+
             # Generate the stats and draw graph
             height = height_climbed(cursor, mp_user_id, units)
             pitches = pitches_climbed(cursor, mp_user_id)
@@ -82,7 +80,7 @@ def create_app(test_config=None):
                     grade_scatters.append(reply)
 
             db_close(cursor, connection)
-            # Show final output
+
             return render_template("data.html",
                                    username=user_data.get("name"),
                                    total_height=height['total'],
