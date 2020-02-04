@@ -81,5 +81,4 @@ MPV is licensed under the GNU General Public License. Check out the [LICENSE](LI
 
 ## Acknowledgments
 ---
-* Thanks to [emailregex.com](https://emailregex.com/) for the regex code to validate email addresses (used in both Python and Javascript).
-* Another thanks goes out to Doug Neiner and Chris Coyier for the awesome [CSS background code](https://css-tricks.com/perfect-full-page-background-image/).
+* Thanks to Doug Neiner and Chris Coyier for the awesome [CSS background code](https://css-tricks.com/perfect-full-page-background-image/).
