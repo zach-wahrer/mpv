@@ -1,10 +1,11 @@
 import csv
-from typing import Dict, Optional, Union
-
+from ..errors.exeptions import *
+import io
+import pandas as pd
 import requests
 from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
+from typing import Dict, Optional, Union
 
-from ..errors.exeptions import *
 
 _DEV_USER_DATA = {"status": 0, "name": "Dev", "mp_id": 1111}
 _DEV_TEST_TICKS = "test_ticks.csv"
@@ -34,28 +35,23 @@ class MountainProjectParser:
             return {"status": 0, "name": self._mp_username, "mp_id": self._mp_id}
 
     def parse_tick_list(self, dev_env: bool = False) -> Dict:
-        """Parse the request data into a CSV and clean."""
+        """Parse the request data into a Pandas dataframe to clean."""
         if dev_env:
             with open(_DEV_TEST_TICKS) as ticklist:
-                ticklist = list(csv.reader(ticklist, delimiter=','))
+                tick_list_file = list(csv.reader(ticklist, delimiter=','))
         else:
             try:
-                tick_list = self.api_data.get("tick_list").content.decode("utf-8")
-                ticklist = list(csv.reader(tick_list.splitlines(), delimiter=','))
+                tick_list_file = self.api_data.get("tick_list").content.decode("utf-8")
+
             except (AttributeError, UnicodeDecodeError) as e:
                 raise MPAPIException
 
-        try:
-            # Delete in reverse order to make field positions simpler.
-            remove = [12, 8, 7, 6, 4, 3, 2]
-            for row in ticklist:
-                for i in remove:
-                    del row[i]
-            del ticklist[0]  # Remove the CSV header
-        except IndexError as e:
-            raise MPAPIException
+            columns = ["Date", "Route", "Pitches", "Style",
+                       "Lead Style", "Route Type", "Length", "Rating Code"]
+            df = pd.read_csv(io.StringIO(tick_list_file),
+                             usecols=columns, na_filter=False)
 
-        return {"status": 0, "data": ticklist}
+        return {"status": 0, "data": df.values.tolist()}
 
 
 class MountainProjectHandler(MountainProjectParser):
