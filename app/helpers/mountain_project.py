@@ -6,7 +6,6 @@ from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Ti
 
 from ..errors.exeptions import *
 
-
 _DEV_USER_DATA = {"status": 0, "name": "Dev", "mp_id": 1111}
 _DEV_TEST_TICKS = "test_ticks.csv"
 
@@ -47,7 +46,8 @@ class MountainProjectParser:
                 raise MPAPIException
 
         try:
-            remove = [12, 8, 7, 6, 4, 3, 2]  # Delete in reverse order to make field positions simpler.
+            # Delete in reverse order to make field positions simpler.
+            remove = [12, 8, 7, 6, 4, 3, 2]
             for row in ticklist:
                 for i in remove:
                     del row[i]
@@ -60,6 +60,7 @@ class MountainProjectParser:
 
 class MountainProjectHandler(MountainProjectParser):
     """Responsible for interacting with the Mountain Project api."""
+
     def __init__(self, api_key: str = None, email: str = None, dev_env: bool = False):
         super().__init__()
         self._api_key = api_key
@@ -69,11 +70,12 @@ class MountainProjectHandler(MountainProjectParser):
 
     def _mp_generic_request(self, obj_key: str,  url: str, params: Dict = None, timeout: int = 30):
         try:
-            mp_request = requests.get(url, params, timeout=timeout)
+            mp_request = requests.get(url, params, timeout=timeout, stream=True)
         except (ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError):
             raise RequestException
 
-        self.api_data.update({obj_key: mp_request})  # add response to super class dictionary for processing.
+        # add response to super class dictionary for processing.
+        self.api_data.update({obj_key: mp_request})
         return mp_request
 
     def fetch_user(self) -> Union["requests", Dict]:
