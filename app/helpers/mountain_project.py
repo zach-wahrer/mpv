@@ -2,6 +2,7 @@ import csv
 from ..errors.exeptions import *
 import io
 import pandas as pd
+from pandas.errors import EmptyDataError, ParserError
 import requests
 from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
 from typing import Dict, Optional, Union
@@ -47,7 +48,7 @@ class MountainProjectParser:
                 tick_list = self.api_data.get("tick_list").content.decode("utf-8")
                 df = pd.read_csv(io.StringIO(tick_list),
                                  usecols=columns, na_filter=False)
-            except (AttributeError, UnicodeDecodeError) as e:
+            except (AttributeError, UnicodeDecodeError, EmptyDataError, ParserError) as e:
                 raise MPAPIException
 
         return {"status": 0, "data": df.values.tolist()}
