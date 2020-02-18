@@ -36,20 +36,19 @@ class MountainProjectParser:
 
     def parse_tick_list(self, dev_env: bool = False) -> Dict:
         """Parse the request data into a Pandas dataframe to clean."""
+        columns = ["Date", "Route", "Pitches", "Style",
+                   "Lead Style", "Route Type", "Length", "Rating Code"]
         if dev_env:
-            with open(_DEV_TEST_TICKS) as ticklist:
-                tick_list_file = list(csv.reader(ticklist, delimiter=','))
+            with open(_DEV_TEST_TICKS) as tick_list_file:
+                df = pd.read_csv(tick_list_file, usecols=columns,
+                                 na_filter=False)
         else:
             try:
-                tick_list_file = self.api_data.get("tick_list").content.decode("utf-8")
-
+                tick_list = self.api_data.get("tick_list").content.decode("utf-8")
+                df = pd.read_csv(io.StringIO(tick_list),
+                                 usecols=columns, na_filter=False)
             except (AttributeError, UnicodeDecodeError) as e:
                 raise MPAPIException
-
-            columns = ["Date", "Route", "Pitches", "Style",
-                       "Lead Style", "Route Type", "Length", "Rating Code"]
-            df = pd.read_csv(io.StringIO(tick_list_file),
-                             usecols=columns, na_filter=False)
 
         return {"status": 0, "data": df.values.tolist()}
 
