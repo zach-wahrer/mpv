@@ -7,11 +7,11 @@ services:
       MYSQL_DATABASE: 'mpv'
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
       - '3306'
-    volumes:
-      - mpv_db:/var/lib/mysql
-volumes:
-  mpv_db:
+  webapp:
+      depends_on:
+          - "db"
+      image: mpv:latest
+      restart: always
+      ports:
+        - "5000:5000"
