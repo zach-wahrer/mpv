@@ -12,17 +12,19 @@ MPV is currently in development. If you'd like to help out, feel free to jump in
 
 
 ### Installing With Docker
-1. In the `app` directory, rename `config.sample.py` to `config.py`. Open it and change the listed variables (minus anything to do with MySQL). See the **Configuration** section below for additional help.
+1. In the `app` directory, rename `config.sample.py` to `config.py`. Open it and change the listed variables (minus related to MySQL). See the **Configuration** section below for additional help.
 
 2. From the project's root directory, execute `docker build -t mpv .` This will build a Docker image of MPV, using your supplied configuration.
 
 3. Still from the project's root directory, run `docker-compose up -d`. This will start two Docker containers, one for MPV and another for the required MySQL database.
 
-4. Use Docker to log in to the MPV container: `docker exec -it `container-id` bash`, substituting `container-id` for the MPV instance. `docker ps` will show it to you.
+4. Use Docker to log in to the MPV container: `docker exec -it container-id bash`, substituting `container-id` for the MPV instance. `docker ps` will show it to you.
 
 5. Once you have a terminal inside the MPV container, run `python3 -m app.setup.db_setup`. This will load the required tables into the MySQL database, and only needs to be done once.
 
 6. Now, you should be able to open `127.0.0.1:5000` in your web browser and see a running MPV!
+
+Note: If/when you need to stop MPV using this method, simply run `docker-compose stop` from the project's root directory.
 
 
 ### Manual Install (With Optional Docker MySQL Container)
@@ -40,7 +42,7 @@ to setup database from docker.
 
 ### Database Setup With Docker
 1. Navigate to the root directory of the MPV project on your machine
-2. run `docker-compose up`
+2. run `docker-compose -f docker-compose-mysql.yaml up`
 3. To connect to the local mysql database instance with `mysql -u root -p mpv -h 127.0.0.1 -P 3306`
 4. Password for development is `password`
 
@@ -63,7 +65,6 @@ MPV_DEV = True
 `MP_KEY` is a Mountain Project API key, which you can get [here](https://www.mountainproject.com/data). The `TEST_ACCT` variable is an email address connected to a Mountain Project account. It allows users to run the app without an account (via the link on the index page) and still show data. For more on `MPV_DEV`, see **Development Mode** below.
 
 ### Testing
-
 To add tests please add them in under the `app/tests` directory.
 Testing is done via Pytest. For documentation please visit https://docs.pytest.org/en/latest/index.html
 To run tests simply run the following shell command: `pytest`
