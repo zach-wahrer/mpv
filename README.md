@@ -11,7 +11,21 @@ Currently, you can try the software at: [mpv.zachw.io](https://mpv.zachw.io). Ch
 MPV is currently in development. If you'd like to help out, feel free to jump in. :-)
 
 
-### Installing
+### Installing With Docker
+1. In the `app` directory, rename `config.sample.py` to `config.py`. Open it and change the listed variables (minus anything to do with MySQL). See the **Configuration** section below for additional help.
+
+2. From the project's root directory, execute `docker build -t mpv .` This will build a Docker image of MPV, using your supplied configuration.
+
+3. Still from the project's root directory, run `docker-compose up -d`. This will start two Docker containers, one for MPV and another for the required MySQL database.
+
+4. Use Docker to log in to the MPV container: `docker exec -it `container-id` bash`, substituting `container-id` for the MPV instance. `docker ps` will show it to you.
+
+5. Once you have a terminal inside the MPV container, run `python3 -m app.setup.db_setup`. This will load the required tables into the MySQL database, and only needs to be done once.
+
+6. Now, you should be able to open `127.0.0.1:5000` in your web browser and see a running MPV!
+
+
+### Manual Install (With Optional Docker MySQL Container)
 1. Make sure you have Python 3.6 installed on your machine, then run the following
 shell command: `pip install -r requirements.txt`
 
