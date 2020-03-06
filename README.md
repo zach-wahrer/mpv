@@ -14,7 +14,7 @@ MPV is currently in development. If you'd like to help out, feel free to jump in
 ### Installing With Docker
 1. In the `app` directory, rename `config.sample.py` to `config.py`. Open it and change the listed variables (minus related to MySQL). See the **Configuration** section below for additional help.
 
-2. From the project's root directory, execute `docker build -t mpv .` This will build a Docker image of MPV, using your supplied configuration.
+2. From the project's root directory, execute `docker build -t mpv .` (Make sure you have the `.` on the end of the command.) This will build a Docker image of MPV, using your supplied configuration.
 
 3. Still from the project's root directory, run `docker-compose up -d`. This will start two Docker containers, one for MPV and another for the required MySQL database.
 
