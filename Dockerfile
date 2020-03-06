@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir gunicorn
 
 EXPOSE 5000
 
-CMD gunicorn --workers=3 --bind 0.0.0.0:5000 --error-logfile mpv_log.txt app:create_app\(\)
+CMD gunicorn --workers=3 --bind 0.0.0.0:5000 app:create_app\(\)
