@@ -30,24 +30,25 @@ def create_app(test_config=None):
 
     @app.route("/", methods=["GET", "POST"])
     def index():
+        """Display user input page."""
         form = MPVEmailForm()
-        if form.validate_on_submit():
-            return redirect("/data", code=307)
-        else:
-            return render_template("index.html", form=form)
+        return render_template("index.html", form=form)
 
     @app.route("/data", methods=["GET", "POST"])
     def data():
         """Process input data and output graphs."""
+        form = MPVEmailForm()
         if request.method == "POST":
 
             # Check for test link click from input page
             if request.form.get("test") == "yes":
                 email = app.config["TEST_ACCT"]
                 units = "feet"
+            elif form.validate():
+                email = form.email.data
+                units = form.units.data
             else:
-                email = request.form.get("email")
-                units = request.form.get("units")
+                return render_template("index.html", form=form)
 
             dev_env = app.config.get("MPV_DEV")
 
@@ -92,6 +93,6 @@ def create_app(test_config=None):
 
         # Send them back to the index if they try to GET
         else:
-            return redirect("/")
+            return redirect('/')
 
     return app
