@@ -1,4 +1,5 @@
 app/config.py
 app/config_docker.py
+app/config_dev.py
 .cache
 __pycache__
