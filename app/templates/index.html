@@ -13,14 +13,12 @@
 
         <!-- User input form -->
         <form action="/data" method="post"  >
-            {% if form %}
-                {{ form.csrf_token }}
-                {% if form.email.errors %}
-                    {% for error in form.email.errors %}
-                        <div class="row justify-content-center p-1" style="color: orangered"> *{{ error }} </div>
-                        {% endfor %}
-                    {% endif %}
-            {% endif %}
+            {{ form.csrf_token }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <div class="row justify-content-center p-1" style="color: orangered"> *{{ error }} </div>
+                    {% endfor %}
+                {% endif %}
         <div class="row justify-content-center p-2">
             <input type="text" name="email" id="email" required="required" placeholder="MP Account Email"  class="form-control col-md-5" autofocus />
         </div>
