@@ -10,6 +10,7 @@ from flask import Flask, redirect, render_template, request
 
 from .config import *
 from .errors.error_handlers import errors
+from .errors.exeptions import UnprocessableEntityException
 from .forms.email_form import MPVEmailForm
 from .graphing import height_climbed, pitches_climbed, grade_scatter, get_types
 from .helpers.database_connection import db_close, db_connect, db_load
@@ -39,7 +40,6 @@ def create_app(test_config=None):
         """Process input data and output graphs."""
         form = MPVEmailForm()
         if request.method == "POST":
-
             # Check for test link click from input page
             if request.form.get("test") == "yes":
                 email = app.config["TEST_ACCT"]
@@ -48,7 +48,7 @@ def create_app(test_config=None):
                 email = form.email.data
                 units = form.units.data
             else:
-                return render_template("index.html", form=form)
+                raise UnprocessableEntityException
 
             dev_env = app.config.get("MPV_DEV")
 

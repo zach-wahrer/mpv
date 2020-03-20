@@ -1,14 +1,17 @@
-from ..errors.exeptions import *
 import io
+import os
+from typing import Dict, Optional, Union
+
 import pandas as pd
-from pandas.errors import EmptyDataError, ParserError
 import requests
 from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout, Timeout
-from typing import Dict, Optional, Union
+from pandas.errors import EmptyDataError, ParserError
+
+from ..errors.exeptions import *
 
 
 _DEV_USER_DATA = {"status": 0, "name": "Dev", "mp_id": 1111}
-_DEV_TEST_TICKS = "test_ticks.csv"
+_DEV_TEST_TICKS = os.path.join(os.getcwd(), 'test_ticks.csv')
 
 
 class MountainProjectParser:

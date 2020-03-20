@@ -27,6 +27,12 @@ def handle_404(error: NotFound):
     return render_template("error.html", data=error), 404
 
 
+@errors.app_errorhandler(UnprocessableEntityException)
+def handle_422(error: UnprocessableEntityException):
+    logging.exception(error)
+    return render_template("error.html", data=UnprocessableEntityException.msg), 422
+
+
 @errors.app_errorhandler(DatabaseException)
 def handle_503(error: DatabaseException):
     logging.exception(error)
