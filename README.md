@@ -67,7 +67,7 @@ MPV_DEV = True
 ### Testing
 To add tests please add them in under the `app/tests` directory.
 Testing is done via Pytest. For documentation please visit https://docs.pytest.org/en/latest/index.html
-To run tests simply run the following shell command: `pytest`
+To run tests simply run the following shell command in the `app` directory: `pytest`
 
 ### Development Mode
 To improve performance time and reduce traffic to the Mountain Project servers, enable development mode by setting the `MPV_DEV` variable in `config.py` to `True`. This disables loading ticks into the database via `dbload()`, sets the userid and name to dev values via `get_user_id()`, and loads `test_ticks.csv` instead of pulling one down from Mountain Project via `ticklist()`.
