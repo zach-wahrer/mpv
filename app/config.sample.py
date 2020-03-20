@@ -11,4 +11,4 @@ MYSQL_ADDRESS = "db"
 MYSQL_TABLE = "mpv"
 MP_KEY = "Your_MountainProject_API_Key_Here"
 TEST_ACCT = "Your_MountainProject_Email_Acount_Here"
-MPV_DEV = True
+MPV_DEV = False
