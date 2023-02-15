@@ -5,4 +5,4 @@ mysql-connector-python==8.0.18
 pandas==1.0.1
 pytest==5.3.2
 requests==2.22.0
-werkzeug == 0.16.1
+werkzeug == 2.2.3
