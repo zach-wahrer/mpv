@@ -1,5 +1,5 @@
 bokeh==1.4.0
-flask==1.1.1
+flask==2.3.2
 Flask-WTF==0.14.2
 mysql-connector-python==8.0.18
 pandas==1.0.1
